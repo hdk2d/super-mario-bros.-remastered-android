@@ -30,10 +30,11 @@ func bounce_players() -> void:
 			player.has_jumped = true
 		else:
 			player.velocity.y = -300
-	if high_bounce:
-		AudioManager.play_sfx("spring", global_position)
-	else:
-		AudioManager.play_sfx("bump", global_position)
+	if Settings.file.audio.extra_sfx == 1:
+		if high_bounce:
+			AudioManager.play_sfx("spring", global_position)
+		else:
+			AudioManager.play_sfx("bump", global_position)
 	players.clear()
 
 func on_area_exited(area: Area2D) -> void:
