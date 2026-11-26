@@ -4,7 +4,7 @@ extends Node
 signal state_entered
 signal state_exited
 
-@onready var state_machine: StateMachine = get_parent()
+@onready var state_machine: Variant = get_parent()
 
 func enter(_msg := {}) -> void:
 	pass
