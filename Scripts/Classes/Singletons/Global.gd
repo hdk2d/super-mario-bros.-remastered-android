@@ -533,3 +533,33 @@ func merge_dict(target: Dictionary, source: Dictionary) -> void:
 # i wouldve much preferred to use Wrapper.get_game_viewport() everywhere instead, but i just cannot get Wrapper to be a global without loading twice right now! for the time being, thisll do
 func get_game_viewport() -> SubViewport:
 	return game_viewport
+
+
+# Keep level-specific render sizing consistent with Android's Video settings.
+func change_window_size_via_index(index: int) -> void:
+	var center_container := get_tree().root.get_node_or_null("Wrapper/CenterContainer") as CenterContainer
+	if center_container == null:
+		return
+	var screen_width := floori(center_container.size.x)
+	var width := 256
+	match index:
+		1:
+			width = 384
+		2:
+			width = screen_width
+		_:
+			width = 256
+	change_window_size(width)
+
+func change_window_size(width: int) -> void:
+	var center_container := get_tree().root.get_node_or_null("Wrapper/CenterContainer") as CenterContainer
+	var game_viewport := get_tree().root.get_node_or_null("Wrapper/CenterContainer/SubViewportContainer/SubViewport") as SubViewport
+	var game_viewport_container := get_tree().root.get_node_or_null("Wrapper/CenterContainer/SubViewportContainer") as SubViewportContainer
+	if center_container == null or game_viewport == null or game_viewport_container == null:
+		return
+	var available_width := floori(center_container.size.x)
+	if available_width <= 0:
+		return
+	var target_width := clampi(width, 1, available_width)
+	game_viewport.size.x = target_width
+	game_viewport_container.size.x = target_width
