@@ -69,7 +69,7 @@ static func reset_values() -> void:
 		Global.score = 0
 	combo_breaks = 0
 	current_rank = "F"
-	Player.times_hit = 0
+	load("res://Scripts/Classes/Entities/Player.gd").times_hit = 0
 	Global.player_power_states = "0000"
 
 func _physics_process(delta: float) -> void:
