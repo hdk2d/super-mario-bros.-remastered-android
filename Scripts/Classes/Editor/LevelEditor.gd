@@ -291,6 +291,7 @@ func parse_tiles() -> void:
 		i.ready.emit()
 		i.set_process_mode(Node.PROCESS_MODE_INHERIT)
 		idx += 1
+	$LevelLoader.resolve_teleport_pipe_connections()
 
 func return_to_editor() -> void:
 	AudioManager.stop_all_music()
