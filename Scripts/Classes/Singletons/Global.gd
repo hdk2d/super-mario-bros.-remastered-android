@@ -4,10 +4,18 @@ var level_theme := "Overworld":
 	set(value):
 		level_theme = value
 		level_theme_changed.emit()
+	get:
+		return theme_override if theme_override != "" else level_theme
 var theme_time := "Day":
 	set(value):
 		theme_time = value
 		level_time_changed.emit()
+	get:
+		return time_override if time_override != "" else theme_time
+
+var theme_override := ""
+var time_override := ""
+var level_metadata := {}
 
 signal level_theme_changed
 signal level_time_changed
@@ -95,6 +103,8 @@ enum Room{MAIN_ROOM, BONUS_ROOM, COIN_HEAVEN, PIPE_CUTSCENE, TITLE_SCREEN}
 const room_strings := ["MainRoom", "BonusRoom", "CoinHeaven", "PipeCutscene", "TitleScreen"]
 
 var current_room: Room = Room.MAIN_ROOM
+# 1.1 room variation selector; values match Level.RoomType.
+var current_room_type := 0
 
 signal transition_finished
 var transitioning_scene := false
@@ -180,6 +190,18 @@ var p_switch_timer_paused := false
 var debug_mode := false
 
 var game_viewport
+
+func update_theme() -> void:
+	theme_override = ""
+	time_override = ""
+	ResourceSetterNew.cache.clear()
+	level_theme_changed.emit()
+	level_time_changed.emit()
+
+# Android always stores user data in Godot's user:// directory.
+# Keep this method for compatibility with the 1.1 resource-pack API.
+func get_config_path() -> String:
+	return config_path
 
 func _ready() -> void:
 	if is_snapshot: get_build_time()
