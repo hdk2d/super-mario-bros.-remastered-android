@@ -2,6 +2,360 @@ class_name Player
 extends CharacterBody2D
 
 #region Physics properies, these can be changed within a custom character's CharacterInfo.json
+@export_group("Player Parameters")
+## Determines the physics properties of the player character, such as general movement values, hitboxes, and other typical behavior.
+@export var PHYSICS_PARAMETERS: Dictionary = {
+	"Default": { # Fallback parameters. Additional entries can be added through CharacterInfo.json.
+		"COLLISION_SIZE": [8, 28],
+		"CROUCH_COLLISION_SIZE": [8, 14],            # The player's hitbox scale when crouched.
+		"CAN_AIR_TURN": false,             # Determines if the player can turn in mid-air.
+		"CAN_BREAK_BRICKS": true,          # Determines if the player can break bricks in their current form.
+		"CAN_BE_WALL_EJECTED": true,       # Determines if the player gets pushed out of blocks if inside of them.
+		"ROUNDED_FLOOR_COLLISION": false,
+		"JUMP_WALK_THRESHOLD": 60.0,       # The minimum velocity the player must move at to perform a walking jump.
+		"JUMP_RUN_THRESHOLD": 135.0,       # The minimum velocity the player must move at to perform a running jump.
+		
+		"JUMP_GRAVITY_IDLE": 11.0,         # The player's gravity while jumping from an idle state, measured in px/frame.
+		"JUMP_GRAVITY_WALK": 11.0,         # The player's gravity while jumping from a walking state, measured in px/frame.
+		"JUMP_GRAVITY_RUN": 11.0,          # The player's gravity while jumping from a running state, measured in px/frame.
+		"JUMP_SPEED_IDLE": 300.0,          # The strength of the player's idle jump, measured in px/sec.
+		"JUMP_SPEED_WALK": 300.0,          # The strength of the player's walking jump, measured in px/sec.
+		"JUMP_SPEED_RUN": 300.0,           # The strength of the player's running jump, measured in px/sec.
+		"JUMP_INCR": 8.0,                  # How much the player's X velocity affects their jump speed.
+		"JUMP_CANCEL_DIVIDE": 1.5,         # When the player cancels their jump, their Y velocity gets divided by this value.
+		"JUMP_HOLD_SPEED_THRESHOLD": 0.0,  # When the player's Y velocity goes past this value while jumping, their gravity switches to FALL_GRAVITY.
+		"JUMP_BUFFER": 10,
+		"CLASSIC_BOUNCE_BEHAVIOR": false,  # Determines if the player can only get extra height from a bounce with upward velocity, as opposed to holding jump.
+		"BOUNCE_SPEED": 200.0,             # The strength at which the player bounces off enemies without any extra input, measured in px/sec.
+		"BOUNCE_JUMP_SPEED": 300.0,        # The strength at which the player bounces off enemies while holding jump, measured in px/sec.
+		
+		"FALL_GRAVITY_PREDETERMINED": false,         # Determines if the player's gravity is determined by their last X velocity from leaving the ground rather than their current X velocity.
+		"FALL_GRAVITY_IDLE": 25.0,         # The player's gravity while falling from an idle state, measured in px/frame.
+		"FALL_GRAVITY_WALK": 25.0,         # The player's gravity while falling from a walking state, measured in px/frame.
+		"FALL_GRAVITY_RUN": 25.0,          # The player's gravity while falling from a running state, measured in px/frame.
+		"MAX_FALL_SPEED": 280.0,           # The player's maximum fall speed, measured in px/sec.
+		"CEILING_BUMP_SPEED": 45.0,        # The speed at which the player falls after hitting a ceiling, measured in px/sec.
+		
+		"CLAMP_GROUND_SPEED": false,       # Determines if the player's speed will get clamped while moving on the ground, emulating snappier movement.
+		"MINIMUM_SPEED": 0.0,              # The player's minimum speed while actively moving.
+		
+		"WALK_SPEED": 96.0,                # The player's speed while walking, measured in px/sec.
+		"GROUND_WALK_ACCEL": 4.0,          # The player's acceleration while walking, measured in px/frame.
+		"WALK_SKID": 8.0,                  # The player's turning deceleration while running, measured in px/frame.
+		"CAN_RUN_ACCEL_EARLY": false,      # Determines if the player can hold run before reaching walk speed to begin running.
+		"RUN_STOP_BUFFER": 0.0,            # Determines the amount of time in seconds before running will stop once its initiated.
+		"RUN_SPEED": 160.0,                # The player's speed while running, measured in px/sec.
+		"GROUND_RUN_ACCEL": 1.25,          # The player's acceleration while running, measured in px/frame.
+		"RUN_SKID": 8.0,     
+		"ICE_ACCEL_MOD": 0.25,
+		"ICE_DECEL_MOD": 0.25,
+		"ICE_SKID_MOD": 0.25,              # The player's turning deceleration while running, measured in px/frame.
+		
+		"CLASSIC_SKID_CONDITIONS": false,  # Determines if the player's speed must be over SKID_THRESHOLD to begin skidding.
+		"CAN_INSTANT_STOP_SKID": false,    # Determines if the player will instantly stop upon reaching the skid threshold.
+		"SKID_THRESHOLD": 100.0,           # The horizontal speed required, to be able to start skidding.
+		"SKID_STOP_THRESHOLD": 10.0,       # The maximum velocity required before the player will stop skidding.
+		
+		"GROUND_WALK_DECEL": 3.0,          # The player's grounded deceleration while no buttons are pressed, measured in px/frame.
+		"GROUND_RUN_DECEL": 3.0,           # The player's grounded deceleration while no buttons are pressed from running speed, measured in px/frame.
+		"DECEL_THRESHOLD": 0,
+		"AIR_DECEL": 0.0,                  # The player's airborne deceleration while no buttons are pressed, measured in px/frame.
+		
+		"AIR_WALK_ACCEL": 3.0,             # The player's usual acceleration while in midair, measured in px/frame.
+		"AIR_WALK_SKID_ACCEL": 4.5,        # The player's usual skid acceleration while in midair, measured in px/frame.
+		"AIR_RUN_ACCEL": 3.0,              # The player's running acceleration while in midair, measured in px/frame.
+		"AIR_RUN_SKID_ACCEL": 4.5,         # The player's running skid acceleration while in midair, measured in px/frame.
+		"AIR_BACKWARDS_ACCEL": 3.0,        # The player's backwards acceleration while in midair, measured in px/frame.
+		"AIR_BACKWARDS_SKID_ACCEL": 4.5,   # The player's backwards skid acceleration while in midair, measured in px/frame.
+		"AIR_SKID_JUMP_SPEED_MINIMUM": 0.0,          # The minimum jump speed required to use 'skid' params instead of 'accel' params for air control.
+
+		"LOCK_AIR_SPEED": false,           # Determines if the player can surpass their walk speed while in the air, aside from on trampolines.
+		"USE_BACKWARDS_ACCEL": false,      # Determines if the player will use backwards acceleration while travelling backwards.
+		"CAN_AIR_RUN_WITHOUT_RUN_BUTTON": false,     # Determines if the player must be holding the run button to allow for running speed in the air.
+		"CAN_AIR_SKID_ALWAYS": true,       # Determines if the player uses 'skid' params instead of 'accel' params if jump started below a certain speed.
+		"CAN_AIR_RUN_EARLY": false,        # Determines a multiplier to the player's acceleration when moving backwards in the air.
+		
+		"CLIMB_OFFSET": 5.0,               # The X position offset applied to the player when climbing.
+		"CLIMB_UP_SPEED": 50.0,            # The player's speed while climbing upwards, measured in px/sec.
+		"CLIMB_DOWN_SPEED": 120.0,         # The player's speed while climbing downwards, measured in px/sec.
+
+		"TRAMPOLINE_SPEED": 500.0,         # The strength of a jump on a trampoline, measured in px/sec.
+		"SUPER_TRAMPOLINE_SPEED": 1200.0,  # The strength of a jump on a super trampoline, measured in px/sec.
+		
+		"SWIM_SPEED": 95.0,                # The player's horizontal speed while swimming, measured in px/sec.
+		"SWIM_GROUND_SPEED": 45.0,         # The player's horizontal speed while grounded underwater, measured in px/sec.
+		"SWIM_DECEL": 3.0,                 # The player's deceleration in water while no buttons are pressed, measured in px/frame.
+		"SWIM_HEIGHT": 100.0,              # The strength of the player's swim, measured in px/sec.
+		"SWIM_EXIT_SPEED": 250.0,          # The strength of the player's jump out of water, measured in px/sec.
+		"SWIM_GRAVITY": 2.5,               # The player's gravity while swimming, measured in px/frame.
+		"MAX_SWIM_FALL_SPEED": 200.0,      # The player's maximum fall speed while swimming, measured in px/sec.
+	},
+	"Small": {
+		"COLLISION_SIZE": [8, 14],
+		"CROUCH_COLLISION_SIZE": [8, 12],
+		"CAN_BREAK_BRICKS": false,
+		"CAN_BE_WALL_EJECTED": false,
+	},
+	"Big": {},
+	"Fire": {},
+	"Superball": {}
+}
+## Determines the physics properties of the character while "Classic Physics" are enabled.
+@export var CLASSIC_PARAMETERS: Dictionary = {
+	"Default": { # This uses the same parameters as PHYSICS_PARAMETERS and should be updated whenever new parameters are added.
+		"COLLISION_SIZE": [8, 28],        # The player's hitbox scale.
+		"CROUCH_COLLISION_SIZE": [8, 14],             # The player's hitbox scale when crouched.
+		"CAN_AIR_TURN": false,             # Determines if the player can turn in mid-air.
+		"CAN_BREAK_BRICKS": true,          # Determines if the player can break bricks in their current form.
+		"CAN_BE_WALL_EJECTED": true,       # Determines if the player gets pushed out of blocks if inside of them.
+		"ROUNDED_FLOOR_COLLISION": true,
+		"JUMP_WALK_THRESHOLD": 60.0,       # The minimum velocity the player must move at to perform a walking jump.
+		"JUMP_RUN_THRESHOLD": 93.75,       # The minimum velocity the player must move at to perform a running jump.
+		"JUMP_BUFFER": 2,
+		"JUMP_GRAVITY_IDLE": 7.5,          # The player's gravity while jumping from an idle state, measured in px/frame.
+		"JUMP_GRAVITY_WALK": 7.03,         # The player's gravity while jumping from a walking state, measured in px/frame.
+		"JUMP_GRAVITY_RUN": 9.375,         # The player's gravity while jumping from a running state, measured in px/frame.
+		"JUMP_SPEED_IDLE": 248.0,          # The strength of the player's idle jump, measured in px/sec.
+		"JUMP_SPEED_WALK": 248.0,          # The strength of the player's walking jump, measured in px/sec.
+		"JUMP_SPEED_RUN": 310.0,           # The strength of the player's running jump, measured in px/sec.
+		"JUMP_INCR": 0.0,                  # How much the player's X velocity affects their jump speed.
+		"JUMP_CANCEL_DIVIDE": 1.0,         # When the player cancels their jump, their Y velocity gets divided by this value.
+		"JUMP_HOLD_SPEED_THRESHOLD": 0.0,  # When the player's Y velocity goes past this value while jumping, their gravity switches to FALL_GRAVITY.
+		
+		"CLASSIC_BOUNCE_BEHAVIOR": true,   # Determines if the player can only get extra height from a bounce with upward velocity, as opposed to holding jump.
+		
+		"BOUNCE_SPEED": {
+			"SMB1": {"value": 248.0},
+			"SMBLL": {"value": 370.0},
+			"SMBANN": {"link": "SMBLL"}
+		},
+		"BOUNCE_JUMP_SPEED": {
+			"SMB1": {"value": 310.0},
+			"SMBLL": {"value": 370.0},
+			"SMBANN": {"link": "SMBLL"}
+		},                                 # The strength at which the player bounces off enemies without any extra input, measured in px/sec.   # The strength at which the player bounces off enemies while holding jump, measured in px/sec.
+		
+		"FALL_GRAVITY_PREDETERMINED": true,          # Determines if the player's gravity is determined by their last X velocity from leaving the ground rather than their current X velocity.
+		"FALL_GRAVITY_IDLE": 26.25,        # The player's gravity while falling from an idle state, measured in px/frame.
+		"FALL_GRAVITY_WALK": 22.5,         # The player's gravity while falling from a walking state, measured in px/frame.
+		"FALL_GRAVITY_RUN": 33.75,         # The player's gravity while falling from a running state, measured in px/frame.
+		"MAX_FALL_SPEED": 255.0,           # The player's maximum fall speed, measured in px/sec.
+		"CEILING_BUMP_SPEED": 45.0,        # The speed at which the player falls after hitting a ceiling, measured in px/sec.
+		
+		"CLAMP_GROUND_SPEED": true,        # Determines if the player's speed will get clamped while moving on the ground, emulating snappier movement.
+		"MINIMUM_SPEED": 4.46,             # The player's minimum speed while actively moving.
+		
+		"WALK_SPEED": 90.0,                # The player's speed while walking, measured in px/sec.
+		"GROUND_WALK_ACCEL": 2.23,         # The player's acceleration while walking, measured in px/frame.
+		"WALK_SKID": 6.1,                  # The player's turning deceleration while running, measured in px/frame.
+		
+		"CAN_RUN_ACCEL_EARLY": true,       # Determines if the player can hold run before reaching walk speed to begin running.
+		"RUN_STOP_BUFFER": 0.167,          # Determines the amount of time in seconds before running will stop once its initiated.
+		"RUN_SPEED": 150.0,                # The player's speed while running, measured in px/sec.
+		"GROUND_RUN_ACCEL": 3.34,          # The player's acceleration while running, measured in px/frame.
+		"RUN_SKID": 6.1,                   # The player's turning deceleration while running, measured in px/frame.
+		
+		"CLASSIC_SKID_CONDITIONS": true,   # Determines if the player's speed must be over SKID_THRESHOLD to begin skidding.
+		"CAN_INSTANT_STOP_SKID": true,     # Determines if the player will instantly stop upon reaching the skid threshold.
+		"SKID_THRESHOLD": 100.0,           # The horizontal speed required, to be able to start skidding.
+		"SKID_STOP_THRESHOLD": 33.75,      # The maximum velocity required before the player will stop skidding.
+		
+		"GROUND_WALK_DECEL": 3.05,   
+		"GROUND_RUN_DECEL": 3.05,
+		"DECEL_THRESHOLD": 33.75,           # The player's grounded deceleration while no buttons are pressed, measured in px/frame.
+		
+		"AIR_DECEL": 0.0,                  # The player's airborne deceleration while no buttons are pressed, measured in px/frame.
+		"AIR_WALK_ACCEL": 2.23,            # The player's usual acceleration while in midair, measured in px/frame.
+		"AIR_WALK_SKID_ACCEL": 3.04,       # The player's usual skid acceleration while in midair, measured in px/frame.
+		"AIR_RUN_ACCEL": 3.34,             # The player's running acceleration while in midair, measured in px/frame.
+		"AIR_RUN_SKID_ACCEL": 3.34,        # The player's running skid acceleration while in midair, measured in px/frame.
+		"AIR_BACKWARDS_ACCEL": 4.46,       # The player's backwards acceleration while in midair, measured in px/frame.
+		"AIR_BACKWARDS_SKID_ACCEL": 4.46,  # The player's backwards skid acceleration while in midair, measured in px/frame.
+		"AIR_SKID_JUMP_SPEED_MINIMUM": 105.0,        # The minimum jump speed required to use 'skid' params instead of 'accel' params for air control.
+
+		"LOCK_AIR_SPEED": true,            # Determines if the player can surpass their walk speed while in the air, aside from on trampolines.
+		"USE_BACKWARDS_ACCEL": true,       # Determines if the player will use backwards acceleration while travelling backwards.
+		"CAN_AIR_RUN_WITHOUT_RUN_BUTTON": true,      # Determines if the player must be holding the run button to allow for running speed in the air.
+		"CAN_AIR_SKID_ALWAYS": false,      # Determines if the player uses 'skid' params instead of 'accel' params if jump started below a certain speed.
+		"CAN_AIR_RUN_EARLY": false,        # Determines a multiplier to the player's acceleration when moving backwards in the air.
+		
+		"CLIMB_OFFSET": 5.0,               # The X position offset applied to the player when climbing.
+		"CLIMB_UP_SPEED": 50.0,            # The player's speed while climbing upwards, measured in px/sec.
+		"CLIMB_DOWN_SPEED": 120.0,         # The player's speed while climbing downwards, measured in px/sec.
+
+		"TRAMPOLINE_SPEED": 500.0,         # The strength of a jump on a trampoline, measured in px/sec.
+		"SUPER_TRAMPOLINE_SPEED": 1200.0,  # The strength of a jump on a super trampoline, measured in px/sec.
+		
+		"SWIM_SPEED": 95.0,                # The player's horizontal speed while swimming, measured in px/sec.
+		"SWIM_GROUND_SPEED": 45.0,         # The player's horizontal speed while grounded underwater, measured in px/sec.
+		"SWIM_DECEL": 0.0,                 # The player's deceleration in water while no buttons are pressed, measured in px/frame.
+		"SWIM_HEIGHT": 100.0,              # The strength of the player's swim, measured in px/sec.
+		"SWIM_EXIT_SPEED": 250.0,          # The strength of the player's jump out of water, measured in px/sec.
+		"SWIM_GRAVITY": 2.5,               # The player's gravity while swimming, measured in px/frame.
+		"MAX_SWIM_FALL_SPEED": 200.0,      # The player's maximum fall speed while swimming, measured in px/sec.
+	},
+	"Small": {
+		"COLLISION_SIZE": [8, 14],        # The player's hitbox scale.
+		"CROUCH_COLLISION_SIZE": [8, 12],  
+		"CROUCH_SCALE": 1.0,
+		"CAN_BREAK_BRICKS": false,
+		"CAN_BE_WALL_EJECTED": false,
+	},
+	"Big": {},
+	"Fire": {},
+	"Superball": {}
+}
+## Determines parameters typically involved with power-up behavior, mainly projectiles fired by the player.
+@export var POWER_PARAMETERS: Dictionary = {
+	"Default": {
+		"STARTING_POWER_STATE": "Small",   # Determines the default starting power state.
+		"STAR_TIME": 12.0,                 # Determines how long a Star will last for.
+		"WING_TIME": 10.0,                 # Determines how long Wings will last for.
+		"HAMMER_TIME": 10.0,               # Determines how long a Hammer will last for.
+		
+		"PROJ_TYPE": "",                   # Determines what projectile scene is used. Leaving this blank disables firing projectiles entirely.
+		
+		"PROJ_PARTICLE": "",               # Determines what particle scene is used. Leaving this blank disables particles from spawning.
+		"PROJ_PARTICLE_OFFSET": [0, 0],    # Determines the spawn location of the projectile's particle.
+		"PROJ_PARTICLE_ON_CONTACT": false, # Defines if the particle will play when making contact without being destroyed.
+		
+		"PROJ_EXTRA_PROJ": "",             # Determines if an extra projectile will be spawned. Leaving this blank will prevent any additional projectiles.
+		"PROJ_EXTRA_PROJ_OFFSET": [0, 0],  # Determines the spawn location of the extra projectile spawned when destroyed.
+		"PROJ_EXTRA_PROJ_ON_CONTACT": false,    # Defines if the extra projectile will spawn when the original makes contact without being destroyed.
+		
+		"PROJ_SFX_THROW": "fireball",      # Defines the sound effect that plays when this projectile is fired.
+		"PROJ_SFX_COLLIDE": "bump",        # Defines the sound effect that plays when this projectile collides.
+		"PROJ_SFX_HIT": "fireball_hit",    # Defines the sound effect that plays when this projectile hits an enemy.
+		"PROJ_COLLECT_COINS": false,
+		"MAX_PROJ_COUNT": 2,               # How many projectiles can be fired at once. -1 and below count as infinite.
+		"PROJ_COLLISION": true,            # Determines if the projectile can interact with collidable surfaces.
+		"PROJ_PIERCE_COUNT": 0,            # Determines how many additional enemies this projectile can hit before being destroyed. -1 and below count as infinite.
+		"PROJ_PIERCE_HITRATE": -1,         # Determines how much time must pass in seconds before this projectile can hit the same enemy it is on top of currently. -1 and below count as infinite. 
+		"PROJ_BOUNCE_COUNT": -1,           # Determines how many additional enemies this projectile can hit before being destroyed. -1 and below count as infinite.
+		"PROJ_GROUND_BOUNCE": true,        # Determines if the projectile can bounce off the ground.
+		"PROJ_WALL_BOUNCE": false,         # Determines if the projectile can bounce off of wals.
+		"PROJ_CEIL_BOUNCE": false,         # Determines if the projectile can bounce off of ceilings.
+		
+		"PROJ_LIFETIME": -1.0,               # Determines how long the projectile will last for. -1 and below count as infinite.
+		"PROJ_OFFSET": [-4.0, 16.0],       # Determines the offset for where the projectile will spawn.
+		"PROJ_ANGLE" : null,               # Determines the exact angle the projectile is sent at in degrees. Leaving this blank disables angled behavior entirely.
+		"PROJ_SPEED": [220.0, -100.0],     # Determines the initial velocity of the projectile.
+		"PROJ_SPEED_UP": null,             # Changes the speed of the projectile if you hold UP.
+		"PROJ_SPEED_DOWN": null,           # Changes the speed of the projectile if you hold DOWN.
+		"PROJ_SPEED_UP_FORWARD": null,             # Changes the speed of the projectile if you hold UP amd LEFT/RIGHT.
+		"PROJ_SPEED_DOWN_FORWARD": null,           # Changes the speed of the projectile if you hold DOWN and LEFT/RIGHT.
+		"PROJ_SPEED_CAP": [-220.0, 220.0], # Determines the minimum and maximum X velocity of the projectile.
+		"PROJ_SPEED_SCALING": false,       # Determines if the projectile will have its initial speed scale with the player's movement.
+		
+		"PROJ_GROUND_DECEL": 0.0,          # The projectile's deceleration on the ground, measured in px/frame
+		"PROJ_AIR_DECEL": 0.0,             # The projectile's (horizontal) deceleration in the air, measured in px/frame
+		"PROJ_AIR_DECEL_VERTICAL": 0.0,    # The projectile's (vertical) deceleration in the air, measured in px/frame. Useful for projectiles that have no gravity.
+		"PROJ_GRAVITY": 15.0,              # The projectile's gravity, measured in px/frame
+		"PROJ_BOUNCE_HEIGHT": 125.0,       # The projectile's bounce velocity upon landing on the ground.
+		"PROJ_MAX_FALL_SPEED": 150.0,      # The projectile's maximum fall speed, measured in px/sec
+		"PROJ_COOLDOWN": 0.0,
+		"PROJ_HARMLESS": false,
+		"PROJ_ELASTIC_BOUNCE_LIMIT": -1,
+		"PROJ_ELASTIC_BOUNCE": [0, 0]
+	},
+	"Small": {
+		"PROJ_OFFSET": [-4.0, 8.0],
+	},
+	"Big": {},
+	"Fire": {
+		"PROJ_TYPE": "res://Scenes/Prefabs/Entities/Items/Fireball",
+		"PROJ_PARTICLE": "res://Scenes/Prefabs/Particles/FireballExplosion",
+	},
+	"Superball": {
+		"PROJ_TYPE": "res://Scenes/Prefabs/Entities/Items/SuperballProjectile",
+		"PROJ_PARTICLE": "res://Scenes/Prefabs/Particles/SmokeParticle",
+		"PROJ_SFX_THROW": "superball",
+		"PROJ_SFX_HIT": "superball_hit",
+		"PROJ_GRAVITY": 0.0, 
+		"PROJ_LIFETIME": 10.0,
+		"PROJ_WALL_BOUNCE": true,
+		"PROJ_CEIL_BOUNCE": true,
+		"PROJ_FLOOR_BOUNCE": true,
+		"PROJ_COLLECT_COINS": true,
+		"PROJ_SPEED": [150.0, -150.0],
+	}
+}
+## Determines values involving various ending sequences, such as grabbing the flagpole and walking to an NPC at the end of a level.
+@export var ENDING_PARAMETERS: Dictionary = {
+	"Default": {
+		"FLAG_SKIP_GRAB": false,           # Determines if the player skips grabbing the flag entirely.
+		"FLAG_HANG_TIMER": 1.5,            # How long the player will stick on the flagpole.
+		"FLAG_SLIDE_SPEED": 125.0,         # How fast the player slides down the flagpole.
+		
+		"FLAG_INITIAL_X_VELOCITY": 0.0,    # Determines the player's initial X velocity after letting go of the flagpole.
+		"FLAG_JUMP_SPEED": 0.0,            # How high the player will initially jump after letting go of the flagpole.
+		"FLAG_JUMP_INCR": 8.0,             # How much the player's X velocity will influence the player's jump height.
+		
+		"FLAG_SPEED_MULT": 1.0,            # The multiplier applied onto the player's max speed when walking to the flag.
+		"FLAG_ACCEL_MULT": 1.0,            # The multiplier applied onto the player's max acceleration when walking to the flag.
+		"TOAD_SPEED_MULT": 1.0,            # The multiplier applied onto the player's max speed when walking to a Toad.
+		"TOAD_ACCEL_MULT": 1.0,            # The multiplier applied onto the player's max acceleration when walking to a Toad.
+		"PEACH_SPEED_MULT": 1.0,           # The multiplier applied onto the player's max speed when walking to Peach.
+		"PEACH_ACCEL_MULT": 1.0,           # The multiplier applied onto the player's max acceleration when walking to Peach.
+		
+		"DOOR_POSE_OFFSET": 0.0,           # The offset of where the player performs their PoseDoor animation, if applicable.
+		"TOAD_POSE_OFFSET": -12.0,         # The offset of where the player performs their PoseToad animation, if applicable.
+		"PEACH_POSE_OFFSET": -12.0,        # The offset of where the player performs their PosePeach animation, if applicable.
+	}
+}
+## Determines values involving death, unique separated by damage types rather than power states.
+@export var DEATH_PARAMETERS: Dictionary = {
+	"Default": {
+		"DEATH_COLLISION": false,          # Determines whether the player will still collide with the level.
+		"DEATH_HANG_TIMER": 0.5,           # The amount of time the player will freeze in the air for during the death animation in seconds
+		"DEATH_X_VELOCITY": 0,             # The horizontal velocity the player gets sent at when dying, measured in px/sec
+		"DEATH_DECEL": 3.0,                # The player's deceleration during death, measured in px/frame
+		"DEATH_JUMP_SPEED": 300.0,         # The strength of the player's "jump" during the death animation, measured in px/sec
+		"DEATH_FALL_GRAVITY": 11.0,        # The player's gravity while falling during death, measured in px/frame
+		"DEATH_MAX_FALL_SPEED": 280.0,     # The player's maximum fall speed during death, measured in px/sec
+	}
+}
+## Determines values involving purely cosmetic changes, including offsets for the wing and hammer sprites and configuration for various visual and audio effects.
+@export var COSMETIC_PARAMETERS: Dictionary = {
+	"Default": { # Fallback parameters. Additional entries can be added through CharacterInfo.json.
+		"WING_OFFSET": [0.0, 0.0],         # The visual offset of the wings which appear with the Wing power-up.
+		"HAMMER_OFFSET": [0.0, -8.0],      # The visual offset of the hammer which appears with the Hammer power-up.
+		
+		"MOVE_ANIM_SPEED_DIV": 32,         # Determines the value used for division in the animation speed formula for walk/run animations. Lower is faster.
+		"CHECKPOINT_ICON_HEIGHT": -40,
+		"RAINBOW_STAR_FX_SPEED": 15.0,     # Determines the speed of the rainbow effect under the effects of a star, measured in cycles/sec
+		"RAINBOW_STAR_SLOW_FX_SPEED": 7.5, # Determines the speed of the rainbow effect nearing the end of a star's duration, measured in cycles/sec
+		"RAINBOW_POWERUP_FX": true,        # Determines whether or not the player will play the rainbow effect when powering up.
+		"RAINBOW_FX_SPEED": 15.0,          # Determines the speed of the rainbow effect in other scenarios, measured in cycles/sec
+		"ICE_SPEED_MOD": 1.5,
+		"WALK_SFX": "",                # Determines which sound effect to play when walking.
+		"RUN_SFX": "",                  # Determines which sound effect to play when running.
+		"SKID_SFX": "skid",            # Determines which sound effect to play when skidding.
+		"JUMP_SFX": "big_jump",            # Determines which sound effect to play when jumping.
+		"TRAMPOLINE_SFX": "big_trampoline",          # Determines which sound effect to play when bouncing on a trampoline.
+		"TRAMPOLINE_USED_SFX": "big_used_trampoline", # Determines which sound effect to play when actively using a trampoline.
+		"GROUNDED_WALK_SFX": true,         # Forces walk sounds to only play when on the ground.
+		"GROUNDED_RUN_SFX": true,          # Forces run sounds to only play when on the ground.
+		"PIPE_CUTSCENE_MOVE_SPEED": 48.0
+	},
+	"Small": {
+		"WING_OFFSET": [0.0, 10.0],
+		"RAINBOW_POWERUP_FX": false,
+		"JUMP_SFX": "small_jump",
+		"TRAMPOLINE_SFX": "small_trampoline",
+		"TRAMPOLINE_USED_SFX": "small_used_trampoline",
+		"CHECKPOINT_ICON_HEIGHT": -24,
+	},
+	"Big": {
+		"RAINBOW_POWERUP_FX": false,
+	}
+} 
+@export_group("")
+
+@export var physics_dict: Dictionary = PHYSICS_PARAMETERS
+var speed_mult := 1.0
+var accel_mult := 1.0
+
 var JUMP_GRAVITY := 11.0               # The player's gravity while jumping, measured in px/frame
 var JUMP_HEIGHT := 300.0               # The strength of the player's jump, measured in px/sec
 var JUMP_INCR := 8.0                   # How much the player's X velocity affects their jump speed
@@ -237,17 +591,104 @@ func _ready() -> void:
 	if Global.level_editor == null:
 		recenter_camera()
 
+func physics_params(type: String, dict: Dictionary = {}, key: String = "") -> Variant:
+	var params := physics_dict if dict.is_empty() else dict
+	if key == "" and power_state != null:
+		key = power_state.state_name
+	var value: Variant = null
+	if key != "" and params.has(key) and params[key] is Dictionary and params[key].has(type):
+		value = params[key][type]
+	elif params.has("Default") and params["Default"] is Dictionary and params["Default"].has(type):
+		value = params["Default"][type]
+	else:
+		push_warning("Missing player parameter: %s (state: %s)" % [type, key])
+		return null
+	if value is Dictionary and has_node("ResourceSetterNew"):
+		var variation: Dictionary = $ResourceSetterNew.get_variation_json(value)
+		if variation.has("value"):
+			value = variation.value
+	if value is int or value is float:
+		if "MULT" not in type and (type.contains("WALK") or type.contains("RUN") or type.contains("AIR") or type.contains("SWIM")):
+			if "ACCEL" in type or "SKID" in type:
+				value *= accel_mult
+			elif "SPEED" in type:
+				value *= speed_mult
+	return value
+
+func has_param(type: String, params_dict: Dictionary = {}, key: String = "") -> bool:
+	var params := physics_dict if params_dict.is_empty() else params_dict
+	if key == "" and power_state != null:
+		key = power_state.state_name
+	if key != "" and params.has(key) and params[key] is Dictionary and params[key].has(type):
+		return true
+	return params.has("Default") and params["Default"] is Dictionary and params["Default"].has(type)
+
+func calculate_speed_param(param: String = "", speed: float = velocity.x) -> Variant:
+	if not physics_params("FALL_GRAVITY_PREDETERMINED"):
+		speed = velocity.x
+	if abs(speed) < physics_params("JUMP_WALK_THRESHOLD"):
+		param += "_IDLE"
+	elif abs(speed) < physics_params("JUMP_RUN_THRESHOLD"):
+		param += "_WALK"
+	else:
+		param += "_RUN"
+	return physics_params(param)
+
+func calculate_jump_height(jump_height: float = physics_params("JUMP_SPEED_IDLE"), jump_incr: float = physics_params("JUMP_INCR")) -> float:
+	return -(jump_height + jump_incr * int(abs(velocity.x) / 25))
+
+func _apply_legacy_physics_parameter(key: String, value: Variant) -> void:
+	var defaults: Dictionary = PHYSICS_PARAMETERS["Default"]
+	match key:
+		"JUMP_GRAVITY":
+			for suffix in ["IDLE", "WALK", "RUN"]: defaults["JUMP_GRAVITY_" + suffix] = value
+		"JUMP_HEIGHT":
+			for suffix in ["IDLE", "WALK", "RUN"]: defaults["JUMP_SPEED_" + suffix] = value
+		"BOUNCE_HEIGHT": defaults["BOUNCE_SPEED"] = value
+		"BOUNCE_JUMP_HEIGHT": defaults["BOUNCE_JUMP_SPEED"] = value
+		"FALL_GRAVITY":
+			for suffix in ["IDLE", "WALK", "RUN"]: defaults["FALL_GRAVITY_" + suffix] = value
+		"DECEL":
+			defaults["GROUND_WALK_DECEL"] = value
+			defaults["GROUND_RUN_DECEL"] = value
+		"AIR_ACCEL":
+			defaults["AIR_WALK_ACCEL"] = value
+			defaults["AIR_RUN_ACCEL"] = value
+		"AIR_SKID":
+			defaults["AIR_WALK_SKID_ACCEL"] = value
+			defaults["AIR_RUN_SKID_ACCEL"] = value
+		"can_air_turn":
+			defaults["CAN_AIR_TURN"] = value
+		_:
+			if defaults.has(key):
+				defaults[key] = value
+
 func apply_character_physics(apply: bool) -> void:
 	var path = "res://Assets/Sprites/Players/" + character + "/CharacterInfo.json"
 	if int(Global.player_characters[player_id]) > 3:
 		path = path.replace("res://Assets/Sprites/Players", Global.config_path.path_join("custom_characters/"))
 	path = ResourceSetter.get_pure_resource_path(path)
-	var json = JSON.parse_string(FileAccess.open(path, FileAccess.READ).get_as_text())
-	
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_warning("Could not open character physics file: " + path)
+		return
+	var json: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not (json is Dictionary):
+		push_warning("Invalid character info JSON: " + path)
+		return
+
+	var physics_data: Dictionary = json.get("physics", {})
 	if apply:
-		for i in json.physics:
-			set(i, json.physics[i])
-	
+		for key in physics_data:
+			var value = physics_data[key]
+			if key in ["PHYSICS_PARAMETERS", "CLASSIC_PARAMETERS", "POWER_PARAMETERS", "ENDING_PARAMETERS", "DEATH_PARAMETERS", "COSMETIC_PARAMETERS"] and value is Dictionary:
+				Global.merge_dict(get(key), value)
+			else:
+				set(key, value)
+				_apply_legacy_physics_parameter(key, value)
+		physics_dict = PHYSICS_PARAMETERS
+
 	for i in get_tree().get_nodes_in_group("SmallCollisions"):
 		var hitbox_scale = json.get("small_hitbox_scale", [1, 1]) if apply else [1, 1]
 		i.hitbox = Vector3(hitbox_scale[0], hitbox_scale[1] if i.get_meta("scalable", true) else 1, json.get("small_crouch_scale", 0.75) if apply else 0.75)
