@@ -13,9 +13,12 @@ const base64_charset := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012
 var selectors_to_add := []
 
 func _ready() -> void:
-	map = JSON.parse_string(FileAccess.open(MAP_PATH, FileAccess.READ).get_as_text())
+	load_entity_map()
 	if Engine.is_editor_hint() == false and OS.is_debug_build() and auto_update:
 		update_map()
+
+static func load_entity_map() -> void:
+	map = JSONParser.parse_to_dict(MAP_PATH)
 
 func update_map() -> void:
 	map = JSON.parse_string(FileAccess.open(MAP_PATH, FileAccess.READ).get_as_text())
