@@ -1320,8 +1320,6 @@ func jump() -> void:
 	await get_tree().physics_frame
 	has_jumped = true
 
-func calculate_jump_height() -> float: # Thanks wye love you xxx
-	return -(JUMP_HEIGHT + JUMP_INCR * int(abs(velocity.x) / 25))
 
 const SMOKE_PARTICLE = preload("res://Scenes/Prefabs/Particles/SmokeParticle.tscn")
 
