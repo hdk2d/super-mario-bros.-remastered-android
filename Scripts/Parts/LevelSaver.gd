@@ -135,7 +135,7 @@ func save_level_data() -> void:
 
 func save_bg_data() -> void:
 	var string := ""
-	for i in [level_bg.primary_layer, level_bg.second_layer, level_bg.second_layer_offset.y, level_bg.time_of_day, level_bg.particles, level_bg.liquid_layer, level_bg.overlay_clouds]:
+	for i in [level_bg.primary_layer, level_bg.second_layer, level_bg.second_layer_offset.y, level_bg.time_of_day, level_bg.particles, level_bg.liquid_layer, level_bg.overlay_clouds, level_bg.second_layer_order]:
 		var key := ""
 		i = int(i)
 		if abs(i) >= 64:
