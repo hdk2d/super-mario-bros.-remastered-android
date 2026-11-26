@@ -97,7 +97,7 @@ const OVERRIDE_STREAMS := [
 	"res://Assets/Audio/BGM/PerfectCoinHeaven.mp3"
 ]
 
-const MUSIC_BASE = preload("uid://da4vqkrpqnma0")
+const MUSIC_BASE = preload("res://Resources/Music/MusicBase.tres")
 
 var character_sfx_map := {}
 
