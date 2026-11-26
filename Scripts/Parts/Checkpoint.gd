@@ -29,7 +29,7 @@ func _enter_tree() -> void:
 		LevelPersistance.active_nodes = old_state.duplicate(true)
 
 func _ready() -> void:
-	if [Global.GameMode.CHALLENGE, Global.GameMode.MARATHON_PRACTICE].has(Global.current_game_mode) or Global.current_campaign == "SMBANN" or (Settings.file.difficulty.extra_checkpoints == 0 and optional):
+	if [Global.GameMode.CHALLENGE, Global.GameMode.MARATHON_PRACTICE, Global.GameMode.DISCO].has(Global.current_game_mode) or Global.current_campaign == "SMBANN" or (Settings.file.difficulty.extra_checkpoints == 0 and optional):
 		queue_free()
 		return
 	if has_meta("is_flag") == false:
@@ -37,17 +37,24 @@ func _ready() -> void:
 		if Settings.file.difficulty.checkpoint_style != 0:
 			queue_free()
 			return
-	elif Settings.file.difficulty.checkpoint_style == 0 and [Global.GameMode.CUSTOM_LEVEL, Global.GameMode.LEVEL_EDITOR].has(Global.current_game_mode) == false:
+	elif Settings.file.difficulty.checkpoint_style == 0 and [Global.GameMode.CUSTOM_LEVEL, Global.GameMode.LEVEL_EDITOR].has(Global.current_game_mode) == false and not Global.in_custom_campaign():
 		queue_free()
 		return
 	if passed and PipeArea.exiting_pipe_id == -1 and Global.current_game_mode != Global.GameMode.LEVEL_EDITOR and Level.vine_return_level == "" and passed_checkpoints[passed_checkpoints.size() - 1] == id:
 		for i in nodes_to_delete:
+			if is_instance_valid(i) == false:
+				continue
 			i.queue_free()
+		Door.unlocked_doors = unlocked_doors.duplicate()
+		KeyItem.total_collected = keys_collected
 		for i in get_tree().get_nodes_in_group("Players"):
+			if is_instance_valid(i) == false:
+				continue
 			i.global_position = self.global_position
 			i.reset_physics_interpolation()
-			i.recenter_camera()
-		KeyItem.total_collected = keys_collected
+			await get_tree().physics_frame
+			if is_instance_valid(i):
+				i.recenter_camera()
 		respawned.emit()
 
 
