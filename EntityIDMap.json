@@ -505,6 +505,6 @@
 	],
 	"C0": [
 		"res://Scenes/Parts/TeleportPipeArea.tscn",
-		"0,8"
+		"8,-8"
 	]
 }
