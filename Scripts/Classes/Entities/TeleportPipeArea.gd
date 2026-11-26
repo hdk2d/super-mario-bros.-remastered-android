@@ -4,6 +4,9 @@ extends PipeArea
 
 @export var connecting_pipe: PipeArea = null
 
+# Stable editor/save identifier used to reconnect paired teleport pipes after loading.
+@export var connection_id := ""
+
 func _ready() -> void:
 	update_visuals()
 
@@ -18,6 +21,9 @@ func update_visuals() -> void:
 		hide()
 
 func run_player_check(player: Player) -> void:
+	if not is_instance_valid(connecting_pipe):
+		Global.log_error("Teleport pipe has no valid paired destination: " + connection_id)
+		return
 	if Global.player_action_pressed(get_input_direction(enter_direction), player.player_id) and can_enter:
 		can_enter = false
 		Checkpoint.passed_checkpoints.clear()
