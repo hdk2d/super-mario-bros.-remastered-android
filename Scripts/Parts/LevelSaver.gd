@@ -42,7 +42,8 @@ func write_file(json := {}, lvl_file_name := "") -> void:
 	print("saved")
 
 func load_entity_map() -> void:
-	entity_map = JSON.parse_string(FileAccess.open(EntityIDMapper.MAP_PATH, FileAccess.READ).get_as_text())
+	EntityIDMapper.load_entity_map()
+	entity_map = EntityIDMapper.map
 
 func get_tiles() -> void:
 	for layer in 5:
