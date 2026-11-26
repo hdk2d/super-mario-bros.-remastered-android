@@ -11,6 +11,8 @@ signal collected
 func area_entered(area: Area2D) -> void:
 	if area.owner is Player:
 		collect()
+	elif area.owner is Projectile and area.owner.COLLECT_COINS:
+		collect()
 
 func collect() -> void:
 	remove_from_group("Coins")
