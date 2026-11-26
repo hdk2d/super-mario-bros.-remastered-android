@@ -506,5 +506,9 @@
 	"B/": [
 		"res://Scenes/Parts/TeleportPipeArea.tscn",
 		"8,-8"
+	],
+	"CE": [
+		"res://Scenes/Prefabs/Entities/Enemies/HomingBill.tscn",
+		"0,0"
 	]
 }
