@@ -53,6 +53,7 @@ func grounded(delta: float) -> void:
 	player.jump_cancelled = false
 	if player.velocity.y >= 0:
 		player.has_jumped = false
+		player.has_spring_jumped = false
 	if Global.player_action_just_pressed("jump", player.player_id):
 		player.handle_water_detection()
 		if player.in_water or player.flight_meter > 0:
