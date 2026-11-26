@@ -102,7 +102,9 @@ func gzip_decode(text: String) -> String:
 	return Marshalls.raw_to_base64(bytes)
 
 func apply_level_data(data := "") -> void:
-	var split = data.split("=")
+	# Split without the trailing empty token. Legacy Android files contain
+	# seven values; 1.1 files append the resolution X and Y components.
+	var split = data.split("=", false)
 	var values := []
 	for i in split:
 		if i.length() == 2:
@@ -110,7 +112,10 @@ func apply_level_data(data := "") -> void:
 		elif i.length() == 1:
 			values.append(base64_charset.find(i))
 		else:
-			values.append(i)
+			values.append(-1)
+	level.enforce_resolution = Vector2.ZERO
+	if values.size() >= 9 and values[7] >= 0 and values[8] >= 0:
+		level.enforce_resolution = Vector2(values[7], values[8])
 	level.theme = Level.THEME_IDXS[values[0]]
 	Global.level_theme = level.theme
 	level.theme_time = ["Day", "Night"][values[1]]
