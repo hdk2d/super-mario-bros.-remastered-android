@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://bifdg1vybfkr5"]
+
+[ext_resource type="PackedScene" path="res://Scenes/Prefabs/Blocks/NoteBlock.tscn" id="1_xv5gc"]
+[ext_resource type="Texture2D" path="res://Assets/Sprites/Particles/BubbleNoteBlockBubble.png" id="3_6is2x"]
+
+[node name="BubbleNoteBlock" instance=ExtResource("1_xv5gc")]
+
+[node name="ResourceSetterNew" parent="Sprite" index="0"]
+json_path = "res://Assets/Sprites/Blocks/BubbleNoteBlock.json"
+
+[node name="Particles" type="CPUParticles2D" parent="."]
+visibility_layer = 2
+emitting = false
+amount = 3
+texture = ExtResource("3_6is2x")
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 30
+draw_order = 1
+emission_shape = 1
+emission_sphere_radius = 8.0
+spread = 180.0
+gravity = Vector2(0, 15)
+initial_velocity_min = 32.0
+initial_velocity_max = 64.0
+damping_min = 25.0
+damping_max = 50.0
+
+[connection signal="bounced" from="." to="Particles" method="set_emitting" binds= [true]]
