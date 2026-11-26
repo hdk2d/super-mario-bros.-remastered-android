@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bbxqn16ekbpcl" path="res://Scripts/Classes/Singletons/Global.gd" id="1_t23sr"]
 [ext_resource type="AudioStream" uid="uid://dhc2t3wbtsoss" path="res://Assets/Audio/SFX/ScoreLoop.wav" id="3_vjpdy"]
 [ext_resource type="Script" uid="uid://cq6f682453q6o" path="res://Scripts/Classes/Components/ResourceSetter.gd" id="4_7puui"]
-[ext_resource type="Script" uid="uid://26yissv8bnqw" path="res://Scripts/UI/WindowChanger.gd" id="4_nxm2a"]
+[ext_resource type="Script" path="res://Scripts/UI/WindowChanger.gd" id="4_nxm2a"]
 [ext_resource type="Script" uid="uid://cmvlgsjmsk0v5" path="res://Scripts/Classes/Resources/ThemedResource.gd" id="5_eyjoc"]
 [ext_resource type="Script" uid="uid://bdgvsycico544" path="res://Scripts/UI/AudioAdjuster.gd" id="5_l70br"]
 [ext_resource type="AudioStream" uid="uid://dsc21eiypsqnd" path="res://Assets/Audio/SFX/Score.wav" id="6_30rl1"]
