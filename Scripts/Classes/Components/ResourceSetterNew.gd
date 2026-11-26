@@ -420,12 +420,14 @@ func create_sprite_frames_from_image(image: Resource, animation_json := {}) -> S
 	
 	return sprite_frames
 
-func clear_cache() -> void:
+static func clear_cache() -> void:
 	for i in cache.keys():
 		if cache[i] == null:
 			cache.erase(i)
 	cache.clear()
 	property_cache.clear()
+	active_flags.clear()
+	sequences.clear()
 
 func log(message) -> void:
 	var millis = int(Time.get_unix_time_from_system()*1000) - 1759860000000;
