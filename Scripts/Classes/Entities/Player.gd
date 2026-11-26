@@ -679,7 +679,7 @@ func apply_character_physics(apply: bool) -> void:
 		return
 
 	var physics_data: Dictionary = json.get("physics", {})
-	physics_dict = PHYSICS_PARAMETERS
+	physics_dict = CLASSIC_PARAMETERS if classic_physics else PHYSICS_PARAMETERS
 	if apply:
 		for key in physics_data:
 			var value = physics_data[key]
@@ -689,7 +689,7 @@ func apply_character_physics(apply: bool) -> void:
 				if key != "can_air_turn":
 					set(key, value)
 				_apply_legacy_physics_parameter(key, value)
-		physics_dict = PHYSICS_PARAMETERS
+		physics_dict = CLASSIC_PARAMETERS if classic_physics else PHYSICS_PARAMETERS
 
 	for i in get_tree().get_nodes_in_group("SmallCollisions"):
 		var hitbox_scale = json.get("small_hitbox_scale", [1, 1]) if apply else [1, 1]
@@ -701,6 +701,7 @@ func apply_character_physics(apply: bool) -> void:
 		i._physics_process(0)
 
 func apply_classic_physics() -> void:
+	physics_dict = CLASSIC_PARAMETERS
 	var file := FileAccess.open("res://Resources/ClassicPhysics.json", FileAccess.READ)
 	if file == null:
 		push_warning("Could not open ClassicPhysics.json")
