@@ -235,6 +235,7 @@ func open_save_dialog() -> void:
 
 func stop_testing() -> void:
 	cleanup()
+	$Level.reset_resolution()
 	return_to_editor()
 	
 
@@ -270,6 +271,7 @@ func play_level() -> void:
 	%Camera.enabled = false
 	level_start.emit()
 	get_tree().call_group("Players", "editor_level_start")
+	$Level.apply_resolution_enforcement()
 	parse_tiles()
 	if Global.current_game_mode != Global.GameMode.CUSTOM_LEVEL:
 		level_file = await $LevelSaver.save_level(level_name, level_author, level_desc, difficulty)
@@ -665,6 +667,8 @@ func transition_to_sublevel(sub_lvl_idx := 0) -> void:
 		LevelPersistance.reset_states()
 	sub_level_id = sub_lvl_idx
 	await $LevelLoader.load_level(sub_lvl_idx)
+	if play_transition:
+		$Level.apply_resolution_enforcement()
 	if Settings.file.visuals.transition_animation == 0:
 		Global.do_fake_transition(0.1)
 	await get_tree().physics_frame
