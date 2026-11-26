@@ -14,9 +14,28 @@ func _ready() -> void:
 	load_entity_map()
 
 func load_level(level_idx := 0) -> void:
+	if level_idx < 0 or level_idx >= 5:
+		Global.log_error("Invalid sublevel index: " + str(level_idx))
+		return
+	if not editor.level_file.has("Levels") or not (editor.level_file["Levels"] is Array) or editor.level_file["Levels"].size() != 5:
+		Global.log_error("Invalid custom level: expected five sublevels")
+		return
+
 	clear_level()
+	# Let queued entity nodes exit before rebuilding the shared Android scene.
+	await get_tree().process_frame
 	editor.sub_level_id = level_idx
-	sub_level_file = editor.level_file["Levels"][level_idx]
+	var selected_sublevel = editor.level_file["Levels"][level_idx]
+	if not (selected_sublevel is Dictionary):
+		Global.log_error("Invalid sublevel data at index " + str(level_idx))
+		return
+	if selected_sublevel.is_empty():
+		sub_level_file = {"Layers": [{}, {}, {}, {}, {}], "Data": "", "BG": ""}
+		return
+	if not selected_sublevel.has("Layers") or not (selected_sublevel["Layers"] is Array) or selected_sublevel["Layers"].size() != 5 or not selected_sublevel.has("Data") or not selected_sublevel.has("BG"):
+		Global.log_error("Incomplete sublevel data at index " + str(level_idx))
+		return
+	sub_level_file = selected_sublevel
 	build_level()
 
 func clear_level() -> void:
@@ -30,7 +49,7 @@ func clear_level() -> void:
 		editor.tile_layer_nodes[layer].clear()
 		for i in connect_tiles:
 			editor.tile_layer_nodes[layer].set_cell(i, 0, Vector2i(13, 8))
-		editor.entity_tiles = [{}, {}, {}, {}, {}]
+	editor.entity_tiles = [{}, {}, {}, {}, {}]
 
 func load_entity_map() -> void:
 	EntityIDMapper.load_entity_map()
