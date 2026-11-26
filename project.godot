@@ -16,9 +16,9 @@ warnings/check_angle_interpolation_type_conflicting=false
 [application]
 
 config/name="SMB1R"
-run/main_scene="uid://d3e1cch72jsyh"
+run/main_scene="res://Scenes/Levels/TitleScreen.tscn"
 config/use_custom_user_dir=true
-config/features=PackedStringArray("4.5", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/show_image=false
 boot_splash/fullsize=false
