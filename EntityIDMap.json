@@ -510,5 +510,9 @@
 	"CE": [
 		"res://Scenes/Prefabs/Entities/Enemies/HomingBill.tscn",
 		"0,0"
+	],
+	"DZ": [
+		"res://Scenes/Prefabs/Blocks/BumpBlock.tscn",
+		"0,0"
 	]
 }
