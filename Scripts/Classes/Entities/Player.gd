@@ -638,7 +638,7 @@ func calculate_jump_height(jump_height: float = physics_params("JUMP_SPEED_IDLE"
 	return -(jump_height + jump_incr * int(abs(velocity.x) / 25))
 
 func _apply_legacy_physics_parameter(key: String, value: Variant) -> void:
-	var defaults: Dictionary = PHYSICS_PARAMETERS["Default"]
+	var defaults: Dictionary = physics_dict["Default"]
 	match key:
 		"JUMP_GRAVITY":
 			for suffix in ["IDLE", "WALK", "RUN"]: defaults["JUMP_GRAVITY_" + suffix] = value
@@ -679,6 +679,7 @@ func apply_character_physics(apply: bool) -> void:
 		return
 
 	var physics_data: Dictionary = json.get("physics", {})
+	physics_dict = PHYSICS_PARAMETERS
 	if apply:
 		for key in physics_data:
 			var value = physics_data[key]
@@ -713,7 +714,6 @@ func apply_classic_physics() -> void:
 		if key != "can_air_turn":
 			set(key, json[key])
 		_apply_legacy_physics_parameter(key, json[key])
-	Global.merge_dict(CLASSIC_PARAMETERS["Default"], PHYSICS_PARAMETERS["Default"])
 	physics_dict = CLASSIC_PARAMETERS
 
 func recenter_camera() -> void:
