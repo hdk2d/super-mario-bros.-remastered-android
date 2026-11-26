@@ -48,13 +48,13 @@ func dispense_item() -> void:
 	node.set_meta("block_item", true)
 	node.set_meta("no_persist", true)
 	node.set_meta("layer", get_meta("layer", -1))
-	if node is PowerUpItem or node.has_meta("is_item"):
+	if node.has_method("player_multiplayer_launch_spawn") or node.has_meta("is_item"):
 		for i in get_tree().get_nodes_in_group("Players"):
 			add_sibling(node)
 			node.global_position = global_position - Vector2(0, 1)
 			node.hide()
 			node.reset_physics_interpolation()
-			if node is PowerUpItem:
+			if node.has_method("player_multiplayer_launch_spawn"):
 				if Global.connected_players > 1:
 					AudioManager.play_sfx("item_appear", global_position)
 					node.player_multiplayer_launch_spawn(i)
