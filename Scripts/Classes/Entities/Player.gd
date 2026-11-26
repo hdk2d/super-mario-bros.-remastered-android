@@ -481,6 +481,7 @@ const POWER_STATES := ["Small", "Big", "Fire"]
 signal moved
 signal dead
 
+var last_damage_source := ""
 var is_dead := false
 
 static var CHARACTER_NAMES := ["CHAR_MARIO", "CHAR_LUIGI", "CHAR_TOAD", "CHAR_TOADETTE"]
@@ -1014,7 +1015,8 @@ func handle_wing_flight(delta: float) -> void:
 	else:
 		%Wings.get_node("AnimationPlayer").play("RESET")
 
-func damage() -> void:
+func damage(type: String = "") -> void:
+	last_damage_source = type
 	if can_hurt == false or is_invincible:
 		return
 	times_hit += 1
