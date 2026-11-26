@@ -127,7 +127,7 @@ func deceleration(delta: float, airborne := false) -> void:
 		decel_type = player.physics_params("GROUND_WALK_DECEL")
 		if abs(initial_decel_x) > player.physics_params("WALK_SPEED"):
 			decel_type = player.physics_params("GROUND_RUN_DECEL")
-	elif player.in_water or player.has_wings:
+	elif player.in_water or player.flight_meter > 0:
 		decel_type = player.physics_params("SWIM_DECEL")
 		player.velocity.x = move_toward(player.velocity.x, 0, (decel_type / delta) * delta)
 	if abs(player.velocity.x) <= player.physics_params("DECEL_THRESHOLD"):
@@ -206,7 +206,7 @@ func air_acceleration(delta: float) -> void:
 	player.velocity.x = move_toward(player.velocity.x, target_speed * player.input_direction, (target_accel / delta) * delta)
 
 func air_skid(delta: float) -> void:
-	player.velocity.x = move_toward(player.velocity.x, 1 * player.input_direction, (player.AIR_SKID / delta) * delta)
+	player.velocity.x = move_toward(player.velocity.x, 1 * player.input_direction, (player.physics_params("AIR_WALK_SKID_ACCEL") / delta) * delta)
 
 func handle_swimming(delta: float) -> void:
 	bubble_meter += delta
@@ -257,7 +257,7 @@ func get_animation_name() -> String:
 					return "SwimAttack"
 				elif player.flight_meter > 0:
 					return "FlyAttack"
-				elif abs(player.velocity.x) < player.RUN_SPEED - 10:
+				elif abs(player.velocity.x) < player.physics_params("RUN_SPEED") - 10:
 					return "WalkAttack"
 				else:
 					return "RunAttack"
