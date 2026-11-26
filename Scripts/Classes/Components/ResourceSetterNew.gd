@@ -82,9 +82,9 @@ func get_resource(json_file: JSON) -> Resource:
 			current_resource_pack = i
 		resource_path = new_path
 	
-	var source_json = JSON.parse_string(FileAccess.open(resource_path, FileAccess.READ).get_as_text())
-	if source_json == null:
-		Global.log_error("Error parsing " + resource_path + "!")
+	var source_json: Dictionary = JSONParser.parse_to_dict(resource_path)
+	if source_json.is_empty():
+		Global.log_error("Error parsing or reading " + resource_path + "!")
 		return
 	var json = source_json.duplicate()
 	var source_resource_path = ""
@@ -308,7 +308,7 @@ func get_variation_json(json := {}) -> Dictionary:
 
 func get_config_file(resource_pack := "") -> void:
 	if FileAccess.file_exists(Global.config_path.path_join("resource_packs/" + resource_pack + "/config.json")):
-		config_to_use = JSON.parse_string(FileAccess.open(Global.config_path.path_join("resource_packs/" + resource_pack + "/config.json"), FileAccess.READ).get_as_text())
+		config_to_use = JSONParser.parse_to_dict(Global.config_path.path_join("resource_packs/" + resource_pack + "/config.json"))
 		if config_to_use == null:
 			Global.log_error("Error parsing Config File! (" + resource_pack + ")")
 			config_to_use = {}
@@ -363,7 +363,7 @@ func load_image_from_path(path := "") -> Texture2D:
 func load_audio_from_path(path := "") -> AudioStream:
 	var stream = null
 	if path.contains(".bgm"):
-		stream = AudioManager.generate_interactive_stream(JSON.parse_string(FileAccess.get_file_as_string(path)))
+		stream = AudioManager.generate_interactive_stream(JSONParser.parse_to_dict(path))
 	elif path.contains("res://"):
 		return load(path)
 	if path.contains(".wav"):
