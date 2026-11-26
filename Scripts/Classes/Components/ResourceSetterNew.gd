@@ -29,6 +29,7 @@ enum ResourceMode {SPRITE_FRAMES, TEXTURE, AUDIO, RAW, FONT}
 
 static var cache := {}
 static var property_cache := {}
+static var active_flags := []
 
 var current_json_path := ""
 
@@ -72,6 +73,7 @@ func update_resource() -> void:
 	if state != [Global.level_theme, Global.theme_time, Global.current_room, Global.current_room_type]:
 		cache.clear()
 		property_cache.clear()
+		active_flags.clear()
 	if node_to_affect != null:
 		var resource = get_resource(resource_json)
 		node_to_affect.set(property_name, resource)
@@ -104,6 +106,7 @@ func get_resource(json_file: JSON) -> Resource:
 		return
 	var json = source_json.duplicate()
 	var source_resource_path = ""
+	is_random = false
 	if json.has("variations"):
 		json = get_variation_json(json.variations)
 		if json.has("source"):
