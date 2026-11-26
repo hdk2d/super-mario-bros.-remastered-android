@@ -73,6 +73,9 @@ const BONUS_ROOMS := {
 @export var vertical_height := -208
 @export var can_backscroll := false
 
+# Stored for 1.1 level-file compatibility. Android keeps its own viewport scaling.
+@export_storage var enforce_resolution := Vector2.ZERO
+
 static var next_world := 1
 static var next_level := 2
 static var next_level_file_path := ""
