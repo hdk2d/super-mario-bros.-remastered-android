@@ -37,18 +37,25 @@ jobs:
           sudo install -m 0755 Godot_v4.5.1-stable_linux.x86_64 /usr/local/bin/godot
           godot --version
 
-      - name: Validate project JSON files
+      - name: Validate project data files
         shell: bash
         run: |
+          set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          files = [Path("EntityIDMap.json"), Path("SelectorKeyMap.json")]
-          for path in files:
-              with path.open(encoding="utf-8") as stream:
-                  json.load(stream)
-              print(f"JSON OK: {path}")
+          with Path("EntityIDMap.json").open(encoding="utf-8") as stream:
+              entity_map = json.load(stream)
+          if not isinstance(entity_map, dict) or not entity_map:
+              raise SystemExit("EntityIDMap.json must contain a non-empty JSON object")
+          print(f"EntityIDMap.json OK: {len(entity_map)} entries")
+
+          selector_map = Path("SelectorKeyMap.json")
+          lines = [line.strip() for line in selector_map.read_text(encoding="utf-8").splitlines() if line.strip()]
+          if not lines:
+              raise SystemExit("SelectorKeyMap.json is empty")
+          print(f"SelectorKeyMap.json OK: {len(lines)} selector keys (line-based format)")
           PY
 
       - name: Import project and parse scripts
