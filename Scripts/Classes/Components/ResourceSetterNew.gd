@@ -350,7 +350,8 @@ func get_variation_json(json := {}) -> Dictionary:
 		else:
 			json = get_variation_json(json[game_mode])
 	
-	var chara = "Character:" + Player.CHARACTERS[int(Global.player_characters[0])]
+	var player_script = load("res://Scripts/Classes/Entities/Player.gd")
+	var chara = "Character:" + player_script.CHARACTERS[int(Global.player_characters[0])]
 	if json.has(chara) == false:
 		chara = "Character:default"
 	if json.has(chara):
