@@ -1,4 +1,4 @@
-[gd_scene load_steps=299 format=3 uid="uid://gbcmqonky63j"]
+[gd_scene load_steps=300 format=3 uid="uid://gbcmqonky63j"]
 
 [ext_resource type="Script" uid="uid://c2lnc7vnq3xth" path="res://Scripts/Classes/Editor/LevelEditor.gd" id="1_0qbyu"]
 [ext_resource type="PackedScene" uid="uid://bksxgpygrdjl7" path="res://Scenes/Prefabs/LevelBG.tscn" id="1_ujeu4"]
@@ -122,6 +122,7 @@
 [ext_resource type="JSON" path="res://Assets/Sprites/Blocks/SpikeBlock.json" id="84_fx550"]
 [ext_resource type="Texture2D" uid="uid://dr67gxml5gxro" path="res://Assets/Sprites/Editor/PipeArea.png" id="84_wu64b"]
 [ext_resource type="PackedScene" uid="uid://dkgu57is78lro" path="res://Scenes/Parts/PipeArea.tscn" id="85_iorxh"]
+[ext_resource type="PackedScene" uid="uid://c6t324yc5gx7p" path="res://Scenes/Parts/TeleportPipeArea.tscn" id="230_teleport"]
 [ext_resource type="PackedScene" uid="uid://dmxufw748fe32" path="res://Scenes/Prefabs/Blocks/SpikeBlock.tscn" id="85_lm3r4"]
 [ext_resource type="Texture2D" uid="uid://dtx6lbaom4qld" path="res://Assets/Sprites/Editor/PipeGenerator.png" id="86_gixmk"]
 [ext_resource type="JSON" path="res://Assets/Sprites/Blocks/DeathBlock.json" id="86_k1rrh"]
@@ -3812,6 +3813,14 @@ tile_name = "OBJ_PIPEAREA"
 type = 1
 icon_texture = ExtResource("84_wu64b")
 entity_scene = ExtResource("85_iorxh")
+tile_offset = Vector2i(8, -8)
+
+[node name="TeleportPipe" parent="TileMenu/MarginContainer/VBoxContainer/PanelContainer/TILES/ScrollContainer/VBoxContainer/Objects/MarginContainer/GridContainer" groups=["Selectors"] instance=ExtResource("8_wkmjk")]
+layout_mode = 2
+tile_name = "OBJ_TELEPORT_PIPE"
+type = 1
+icon_texture = ExtResource("84_wu64b")
+entity_scene = ExtResource("230_teleport")
 tile_offset = Vector2i(8, -8)
 
 [node name="PipeGenerator" parent="TileMenu/MarginContainer/VBoxContainer/PanelContainer/TILES/ScrollContainer/VBoxContainer/Objects/MarginContainer/GridContainer" groups=["Selectors"] instance=ExtResource("8_wkmjk")]
