@@ -5,7 +5,7 @@ static var active_nodes := [[], []]
 
 var active := false
 
-@onready var path := get_path_string()
+var path := ""
 
 signal enabled
 signal enabled_2
