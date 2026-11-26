@@ -434,7 +434,7 @@ var kicking = false
 var can_kick_anim = false
 
 @export var player_id := 0
-const ONE_UP_NOTE = preload("uid://dopxwjj37gu0l")
+const ONE_UP_NOTE = preload("res://Scenes/Parts/OneUpNote.tscn")
 var gravity := FALL_GRAVITY
 
 var attacking := false
@@ -780,7 +780,7 @@ func _physics_process(delta: float) -> void:
 	elif is_actually_on_floor() and skidding and Settings.file.audio.skid_sfx == 1:
 		$SkidSFX.play()
 
-const BUBBLE_PARTICLE = preload("uid://bwjae1h1airtr")
+const BUBBLE_PARTICLE = preload("res://Scenes/Prefabs/Particles/BubbleParticle.tscn")
 
 func handle_water_detection() -> void:
 	var old_water = in_water
@@ -1149,7 +1149,7 @@ func time_up() -> void:
 	die()
 
 func set_power_state_frame() -> void:
-	colour_palette = ResourceSetter.get_resource(preload("uid://b0quveyqh25dn"))
+	colour_palette = ResourceSetter.get_resource(preload("res://Assets/Sprites/Players/InvinciblePalettes/InvinciblePalette.png"))
 	$PlayerPalette/ResourceSetterNew.resource_json = (CHARACTER_PALETTES[int(Global.player_characters[player_id])])
 	if power_state != null:
 		$ResourceSetterNew.resource_json = load(get_character_sprite_path())
