@@ -33,4 +33,9 @@ func set_as_active_2() -> void:
 	active_nodes[1].append(path)
 
 func get_path_string() -> String:
+	# Android reuses one Level scene for all five custom-level sublevels.
+	# Include the active sublevel so equal coordinates in different sublevels
+	# do not share persistence state.
+	if is_instance_valid(Global.level_editor) and LevelEditor.playing_level:
+		return str(Global.level_editor.sub_level_id) + "/" + str(Vector2i(owner.global_position / 8))
 	return Global.current_level.scene_file_path + str(Vector2i(owner.global_position / 8))
