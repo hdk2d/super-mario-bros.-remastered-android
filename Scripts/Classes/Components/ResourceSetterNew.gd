@@ -10,6 +10,20 @@ extends Node
 		resource_json = value
 		update_resource()
 
+# Compatibility with the 1.1 resource setter format.
+# Existing Android scenes continue to use resource_json.
+@export var json_path := "":
+	set(value):
+		json_path = value
+		if value == "":
+			resource_json = null
+		else:
+			var loaded_json = load(value)
+			if loaded_json is JSON:
+				resource_json = loaded_json
+			else:
+				Global.log_error("Resource JSON could not be loaded: " + value)
+
 enum ResourceMode {SPRITE_FRAMES, TEXTURE, AUDIO, RAW, FONT}
 @export var use_cache := true
 
