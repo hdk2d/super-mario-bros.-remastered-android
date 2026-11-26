@@ -58,7 +58,7 @@ func get_direction(player_x := 0.0) -> void:
 		direction = -1
 
 func summon_cloud_particle() -> void:
-	var node = preload("res://Scenes/Prefabs/Particles/LakituCloudBurst.tscn").instantiate()
+	var node = load("res://Scenes/Prefabs/Particles/LakituCloudBurst.tscn").instantiate()
 	node.global_position = $Cloud.global_position
 	add_sibling(node)
 
