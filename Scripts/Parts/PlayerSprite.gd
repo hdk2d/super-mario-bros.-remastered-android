@@ -15,15 +15,16 @@ func _ready() -> void:
 	update()
 
 func update() -> void:
-	character = Player.CHARACTERS[int(Global.player_characters[player_id])]
+	var player_script = load("res://Scripts/Classes/Entities/Player.gd")
+	character = player_script.CHARACTERS[int(Global.player_characters[player_id])]
 	var power_state = Global.player_power_states[player_id]
 	if force_power_state != "":
 		power_state = force_power_state
 	if force_character != "":
 		character = force_character
 	if resource_setter != null:
-		var path = "res://Assets/Sprites/Players/" + character + "/" + Player.POWER_STATES[int(power_state)] + ".json"
-		if Player.CHARACTERS.find(character) > 3:
+		var path = "res://Assets/Sprites/Players/" + character + "/" + player_script.POWER_STATES[int(power_state)] + ".json"
+		if player_script.CHARACTERS.find(character) > 3:
 			path = path.replace("res://Assets/Sprites/Players/", Global.config_path.path_join("custom_characters/"))
 		var json = resource_setter.get_resource(load(path))
 		sprite_frames = json
@@ -33,7 +34,8 @@ func update() -> void:
 			offset.y = -(sprite_frames.get_frame_texture(animation, frame).get_height() / 2.0)
 
 func on_animation_changed() -> void:
+	var player_script = load("res://Scripts/Classes/Entities/Player.gd")
 	var fallback = animation
-	while not sprite_frames.has_animation(fallback) and Player.ANIMATION_FALLBACKS.has(fallback):
-		fallback = Player.ANIMATION_FALLBACKS[fallback]
+	while not sprite_frames.has_animation(fallback) and player_script.ANIMATION_FALLBACKS.has(fallback):
+		fallback = player_script.ANIMATION_FALLBACKS[fallback]
 	play(fallback)
