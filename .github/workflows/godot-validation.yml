@@ -1,0 +1,116 @@
+name: Godot validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: godot-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Import, parse and smoke test
+    # The bundled godotgif GDExtension needs GLIBCXX_3.4.32, unavailable on Ubuntu 22.04.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Install Godot 4.6.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          wget -q https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux.x86_64.zip
+          unzip -q Godot_v4.6.1-stable_linux.x86_64.zip
+          sudo install -m 0755 Godot_v4.6.1-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+          strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep -F GLIBCXX_3.4.32
+
+      - name: Validate project data files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          with Path("EntityIDMap.json").open(encoding="utf-8") as stream:
+              entity_map = json.load(stream)
+          if not isinstance(entity_map, dict) or not entity_map:
+              raise SystemExit("EntityIDMap.json must contain a non-empty JSON object")
+          print(f"EntityIDMap.json OK: {len(entity_map)} entries")
+
+          selector_map = Path("SelectorKeyMap.json")
+          lines = [line.strip() for line in selector_map.read_text(encoding="utf-8").splitlines() if line.strip()]
+          if not lines:
+              raise SystemExit("SelectorKeyMap.json is empty")
+          print(f"SelectorKeyMap.json OK: {len(lines)} selector keys (line-based format)")
+          PY
+
+      - name: Prepare headless validation project
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          path = Path("project.godot")
+          text = path.read_text(encoding="utf-8")
+          start = text.find("[editor_plugins]")
+          if start >= 0:
+              end = text.find("\n[", start + 1)
+              if end < 0:
+                  end = len(text)
+              section = text[start:end]
+              section = re.sub(r"(?m)^enabled=.*$", "enabled=PackedStringArray()", section)
+              text = text[:start] + section + text[end:]
+          text = re.sub(r"(?m)^theme/custom(?:_font)?=.*\n", "", text)
+          path.write_text(text, encoding="utf-8")
+          print("Headless validation: editor plugins and custom theme temporarily disabled.")
+          PY
+
+      - name: Import project assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --editor --path . --import 2>&1 | tee godot-import.log
+
+      - name: Parse scripts and validate resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --editor --path . --quit 2>&1 | tee godot-parse.log
+          if grep -E '(^| )(SCRIPT ERROR:|ERROR:)' godot-parse.log | grep -v -E 'Editor plugin is not registered: GifToSpriteFramesPlugin|Editor plugin is not registered: GifToAnimatedTexturePlugin'; then
+            echo "Godot reported script or resource errors."
+            exit 1
+          fi
+
+      - name: Run headless startup smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path . --quit-after 180 2>&1 | tee godot-smoke.log
+          if grep -E '(^| )(SCRIPT ERROR:|ERROR:)' godot-smoke.log | grep -v -E 'Editor plugin is not registered: GifToSpriteFramesPlugin|Editor plugin is not registered: GifToAnimatedTexturePlugin|ERROR: [0-9]+ RID allocations of type .* were leaked at exit|ERROR: [0-9]+ resources still in use at exit'; then
+            echo "Godot startup reported script or runtime errors."
+            exit 1
+          fi
+
+      - name: Upload Godot validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-validation-logs
+          path: |
+            godot-import.log
+            godot-parse.log
+            godot-smoke.log
+          if-no-files-found: ignore
+          retention-days: 7
