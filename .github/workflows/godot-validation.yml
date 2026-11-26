@@ -1,0 +1,58 @@
+name: Godot validation
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "port/joemama-1.1.0-android"
+  pull_request:
+    branches:
+      - "port/joemama-1.1.0-android"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: godot-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Import, parse and smoke test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Install Godot 4.5.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          wget -q https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_linux.x86_64.zip
+          unzip -q Godot_v4.5.1-stable_linux.x86_64.zip
+          sudo install -m 0755 Godot_v4.5.1-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+
+      - name: Validate project JSON files
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          files = [Path("EntityIDMap.json"), Path("SelectorKeyMap.json")]
+          for path in files:
+              with path.open(encoding="utf-8") as stream:
+                  json.load(stream)
+              print(f"JSON OK: {path}")
+          PY
+
+      - name: Import project and parse scripts
+        run: godot --headless --editor --path . --quit
+
+      - name: Run headless startup smoke test
+        run: godot --headless --path . --quit-after 180
