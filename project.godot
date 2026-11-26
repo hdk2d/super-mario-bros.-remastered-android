@@ -16,7 +16,7 @@ warnings/check_angle_interpolation_type_conflicting=false
 [application]
 
 config/name="SMB1R"
-run/main_scene="res://Scenes/Levels/TitleScreen.tscn"
+run/main_scene="res://Scenes/Prefabs/Wrapper.tscn"
 config/use_custom_user_dir=true
 config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 1)
