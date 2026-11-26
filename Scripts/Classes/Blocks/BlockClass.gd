@@ -1,7 +1,7 @@
 @icon("res://Assets/Sprites/Editor/Block.svg")
 class_name Block
 extends AnimatableBody2D
-signal player_block_hit(player: Player)
+signal player_block_hit(player: Variant)
 signal shell_block_hit(shell: Shell)
 
 @export var visuals: Node = null
@@ -85,7 +85,7 @@ func dispense_item() -> void:
 func hit_block() -> void:
 	shell_block_hit.emit(null)
 
-func player_mushroom_check(player: Player = null) -> PackedScene:
+func player_mushroom_check(player: Variant = null) -> PackedScene:
 	if player.power_state.hitbox_size == "Small" and mushroom_if_small:
 		return load(SUPER_MUSHROOM)
 	return item
