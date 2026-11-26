@@ -2,12 +2,6 @@ name: Godot validation
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - "port/joemama-1.1.0-android"
-  pull_request:
-    branches:
-      - "port/joemama-1.1.0-android"
 
 permissions:
   contents: read
