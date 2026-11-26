@@ -116,6 +116,13 @@ func apply_level_data(data := "") -> void:
 	level.enforce_resolution = Vector2.ZERO
 	if values.size() >= 9 and values[7] >= 0 and values[8] >= 0:
 		level.enforce_resolution = Vector2(values[7], values[8])
+	# Reject truncated or malformed data before indexing theme/campaign arrays.
+	if values.size() < 7:
+		Global.log_error("Invalid level data: required fields are missing")
+		return
+	if values[0] < 0 or values[0] >= Level.THEME_IDXS.size() or values[1] < 0 or values[1] > 1 or values[2] < 0 or values[3] < 0 or values[3] >= 4 or values[4] < 0 or values[4] > 1 or values[5] < 0 or values[6] < 0:
+		Global.log_error("Invalid level data: one or more fields are out of range")
+		return
 	level.theme = Level.THEME_IDXS[values[0]]
 	Global.level_theme = level.theme
 	level.theme_time = ["Day", "Night"][values[1]]
