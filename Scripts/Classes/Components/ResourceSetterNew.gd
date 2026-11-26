@@ -452,6 +452,8 @@ func log(message) -> void:
 	print(string % millis)
 
 func load_image_from_path(path := "") -> Texture2D:
+	if path.is_empty():
+		return null
 	if path.contains("res://"):
 		if path.contains("NULL"):
 			return null
