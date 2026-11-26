@@ -31,12 +31,43 @@ func load_level(level_idx := 0) -> void:
 		return
 	if selected_sublevel.is_empty():
 		sub_level_file = {"Layers": [{}, {}, {}, {}, {}], "Data": "", "BG": ""}
+		reset_empty_sublevel()
 		return
 	if not selected_sublevel.has("Layers") or not (selected_sublevel["Layers"] is Array) or selected_sublevel["Layers"].size() != 5 or not selected_sublevel.has("Data") or not selected_sublevel.has("BG"):
 		Global.log_error("Incomplete sublevel data at index " + str(level_idx))
+		reset_empty_sublevel()
 		return
+	for layer_data in selected_sublevel["Layers"]:
+		if not (layer_data is Dictionary):
+			Global.log_error("Invalid layer data at sublevel " + str(level_idx))
+			reset_empty_sublevel()
+			return
 	sub_level_file = selected_sublevel
 	build_level()
+
+func reset_empty_sublevel() -> void:
+	# A blank sublevel must not inherit the previous room's settings.
+	level.theme = "Overworld"
+	level.theme_time = "Day"
+	level.campaign = "SMB1"
+	level.can_backscroll = false
+	level.vertical_height = -208
+	level.time_limit = 400
+	level.enforce_resolution = Vector2.ZERO
+	editor.bgm_id = 0
+	Global.current_campaign = level.campaign
+	Global.level_theme = level.theme
+	Global.theme_time = level.theme_time
+	level_bg.set_value(0, "primary_layer")
+	level_bg.set_value(0, "second_layer")
+	level_bg.set_value(0, "second_layer_offset")
+	level_bg.set_value(0, "time_of_day")
+	level_bg.set_value(0, "particles")
+	level_bg.set_value(0, "liquid_layer")
+	level_bg.set_value(0, "overlay_clouds")
+	level_bg.set_value(0, "second_layer_order")
+	ResourceSetterNew.cache.clear()
+	Global.level_theme_changed.emit()
 
 func clear_level() -> void:
 	for layer in 5:
