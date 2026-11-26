@@ -258,6 +258,7 @@ func resolve_teleport_pipe_connections() -> void:
 		pipe.connecting_pipe = null
 		var pair_id: String = pipe.connection_id.strip_edges()
 		if pair_id.is_empty():
+			push_warning("Teleport pipe at %s has no connection ID" % pipe.global_position)
 			continue
 		if not pairs.has(pair_id):
 			pairs[pair_id] = []
