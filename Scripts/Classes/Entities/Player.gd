@@ -45,6 +45,7 @@ var DEATH_JUMP_HEIGHT := 300.0         # The strength of the player's "jump" dur
 @onready var score_note_spawner: ScoreNoteSpawner = $ScoreNoteSpawner
 
 var has_jumped := false
+var has_spring_jumped := false
 
 var direction := 1
 var input_direction := 0
