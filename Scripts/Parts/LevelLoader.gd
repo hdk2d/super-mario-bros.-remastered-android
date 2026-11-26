@@ -98,6 +98,7 @@ func build_level() -> void:
 		layer_id += 1
 	apply_level_data(sub_level_file["Data"])
 	apply_bg_data(sub_level_file["BG"])
+	resolve_teleport_pipe_connections()
 
 func add_tiles(chunk := "", chunk_id := 0, layer := 0) -> void:
 	for tile in chunk.split("=", false):
@@ -245,3 +246,29 @@ func decode_from_base64_2char(encoded: String) -> int:
 
 func tile_to_chunk_idx(tile_position := Vector2i.ZERO) -> int:
 	return floor(tile_position.x / 32.0)
+
+
+func resolve_teleport_pipe_connections() -> void:
+	# The Android editor loads one sublevel at a time, so only endpoints in
+	# the currently reconstructed sublevel can be connected safely.
+	var pairs := {}
+	for pipe in get_tree().get_nodes_in_group("Pipes"):
+		if pipe is not TeleportPipeArea:
+			continue
+		pipe.connecting_pipe = null
+		var pair_id: String = pipe.connection_id.strip_edges()
+		if pair_id.is_empty():
+			continue
+		if not pairs.has(pair_id):
+			pairs[pair_id] = []
+		pairs[pair_id].append(pipe)
+
+	for pair_id in pairs:
+		var endpoints: Array = pairs[pair_id]
+		if endpoints.size() != 2:
+			push_warning("Teleport pipe pair ID '%s' must identify exactly two endpoints; found %d" % [pair_id, endpoints.size()])
+			continue
+		endpoints[0].connecting_pipe = endpoints[1]
+		endpoints[1].connecting_pipe = endpoints[0]
+		endpoints[0].update_visuals()
+		endpoints[1].update_visuals()
