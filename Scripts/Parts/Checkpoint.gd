@@ -5,6 +5,8 @@ extends Node2D
 
 @export var optional := false
 
+@export_enum("Per-Setting", "Disabled", "Enabled") var give_mushroom := 0
+
 signal crossed(player: Player)
 signal respawned
 
@@ -64,7 +66,7 @@ func on_area_entered(area: Area2D) -> void:
 		Level.start_level_path = Global.current_level.scene_file_path
 		if Global.current_game_mode == Global.GameMode.LEVEL_EDITOR or Global.current_game_mode == Global.GameMode.CUSTOM_LEVEL:
 			sublevel_id = Global.level_editor.sub_level_id
-		if Settings.file.difficulty.checkpoint_style == 2 and has_meta("is_flag"):
+		if ((Settings.file.difficulty.checkpoint_style == 2 and give_mushroom == 0) or give_mushroom == 2) and has_meta("is_flag"):
 			if player.power_state.state_name == "Small":
 				player.get_power_up("Big", false)
 		respawn_position = global_position
