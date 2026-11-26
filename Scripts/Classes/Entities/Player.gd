@@ -685,7 +685,8 @@ func apply_character_physics(apply: bool) -> void:
 			if key in ["PHYSICS_PARAMETERS", "CLASSIC_PARAMETERS", "POWER_PARAMETERS", "ENDING_PARAMETERS", "DEATH_PARAMETERS", "COSMETIC_PARAMETERS"] and value is Dictionary:
 				Global.merge_dict(get(key), value)
 			else:
-				set(key, value)
+				if key != "can_air_turn":
+					set(key, value)
 				_apply_legacy_physics_parameter(key, value)
 		physics_dict = PHYSICS_PARAMETERS
 
@@ -699,9 +700,21 @@ func apply_character_physics(apply: bool) -> void:
 		i._physics_process(0)
 
 func apply_classic_physics() -> void:
-	var json = JSON.parse_string(FileAccess.open("res://Resources/ClassicPhysics.json", FileAccess.READ).get_as_text())
-	for i in json:
-		set(i, json[i])
+	var file := FileAccess.open("res://Resources/ClassicPhysics.json", FileAccess.READ)
+	if file == null:
+		push_warning("Could not open ClassicPhysics.json")
+		return
+	var json: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not (json is Dictionary):
+		push_warning("Invalid ClassicPhysics.json")
+		return
+	for key in json:
+		if key != "can_air_turn":
+			set(key, json[key])
+		_apply_legacy_physics_parameter(key, json[key])
+	Global.merge_dict(CLASSIC_PARAMETERS["Default"], PHYSICS_PARAMETERS["Default"])
+	physics_dict = CLASSIC_PARAMETERS
 
 func recenter_camera() -> void:
 	%CameraHandler.recenter_camera()
