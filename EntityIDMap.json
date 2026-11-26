@@ -514,5 +514,13 @@
 	"DZ": [
 		"res://Scenes/Prefabs/Blocks/BumpBlock.tscn",
 		"0,0"
+	],
+	"B+": [
+		"res://Scenes/Prefabs/Entities/Enemies/StaticPiranhaPlant.tscn",
+		"0,8"
+	],
+	"E0": [
+		"res://Scenes/Prefabs/Entities/Enemies/StaticRedPiranhaPlant.tscn",
+		"0,8"
 	]
 }
