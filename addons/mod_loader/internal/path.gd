@@ -158,6 +158,9 @@ static func get_file_paths_in_dir(src_dir_path: String) -> Array:
 static func get_dir_paths_in_dir(src_dir_path: String) -> Array:
 	var dir_paths := []
 
+	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(src_dir_path)):
+		return dir_paths
+
 	var dir := DirAccess.open(src_dir_path)
 
 	if dir == null:
