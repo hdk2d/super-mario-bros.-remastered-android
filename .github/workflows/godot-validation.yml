@@ -72,13 +72,13 @@ jobs:
           text = path.read_text(encoding="utf-8")
           start = text.find("[editor_plugins]")
           if start >= 0:
-              end = text.find("\\n[", start + 1)
+              end = text.find("\n[", start + 1)
               if end < 0:
                   end = len(text)
               section = text[start:end]
               section = re.sub(r"(?m)^enabled=.*$", "enabled=PackedStringArray()", section)
               text = text[:start] + section + text[end:]
-          text = re.sub(r"(?m)^theme/custom(?:_font)?=.*\\n", "", text)
+          text = re.sub(r"(?m)^theme/custom(?:_font)?=.*\n", "", text)
           path.write_text(text, encoding="utf-8")
           print("Headless validation: editor plugins and custom theme temporarily disabled.")
           PY
