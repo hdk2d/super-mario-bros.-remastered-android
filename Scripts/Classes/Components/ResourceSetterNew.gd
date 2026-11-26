@@ -220,6 +220,8 @@ func get_variation_json(json := {}) -> Dictionary:
 	var level_theme = Global.level_theme
 	if force_properties.has("Theme"):
 		level_theme = force_properties.Theme
+	if Global.theme_override != "":
+		level_theme = Global.theme_override
 	for i in json.keys().filter(func(key): return key.contains("config:")):
 		var option_name = i.get_slice(":", 1)
 		get_config_file(current_resource_pack)
@@ -247,6 +249,8 @@ func get_variation_json(json := {}) -> Dictionary:
 	var level_time = Global.theme_time
 	if force_properties.has("Time"):
 		level_time = force_properties.Time
+	if Global.time_override != "":
+		level_time = Global.time_override
 	if json.has(level_time):
 		json = get_variation_json(json[level_time])
 	
@@ -261,9 +265,20 @@ func get_variation_json(json := {}) -> Dictionary:
 		else:
 			json = get_variation_json(json[campaign])
 	
+	for flag_key in json.keys().filter(func(key): return key.contains("flag:")):
+		if active_flags.has(flag_key):
+			is_random = true
+			json = get_variation_json(json[flag_key])
+			break
 	if json.has("choices") and json.choices is Array and json.choices.is_empty() == false:
 		is_random = true
-		var random_json = json.choices.pick_random()
+		var choice_index := 0
+		if has_meta("RNGChoice"):
+			choice_index = int(get_meta("RNGChoice"))
+		else:
+			choice_index = randi_range(0, json.choices.size() - 1)
+			set_meta("RNGChoice", choice_index)
+		var random_json = json.choices[choice_index]
 		if random_json.has("link"):
 			json = get_variation_json(json[random_json.get("link")])
 		else:
@@ -367,6 +382,7 @@ func get_variation_json(json := {}) -> Dictionary:
 				metadata_value = str(metadata_source.get_meta(metadata_name, "Default"))
 			var metadata_json = json[key].get(metadata_value, json[key].get("Default"))
 			if metadata_json is Dictionary:
+				is_random = true
 				if metadata_json.has("link"):
 					json = get_variation_json(json[key][metadata_json.get("link")])
 				else:
