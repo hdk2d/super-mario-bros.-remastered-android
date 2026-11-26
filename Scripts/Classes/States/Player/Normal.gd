@@ -111,14 +111,12 @@ func ground_acceleration(delta: float) -> void:
 	if ((Global.player_action_pressed("run", player.player_id) or run_buffer > 0) and walk_speed_requirement) and (not player.in_water and player.flight_meter <= 0) and player.can_run:
 		target_move_speed = player.physics_params("RUN_SPEED")
 		target_accel = player.physics_params("GROUND_RUN_ACCEL")
-	if Player.pipe_cutscene:
-		target_move_speed = player.physics_params("PIPE_CUTSCENE_MOVE_SPEED", player.COSMETIC_PARAMETERS)
 	if player.input_direction != player.velocity_direction:
 		if (Global.player_action_pressed("run", player.player_id) or run_buffer > 0) and player.can_run:
 			target_accel = player.physics_params("RUN_SKID")
 		else:
 			target_accel = player.physics_params("WALK_SKID")
-		var clamp_values = [-target_move_speed, target_move_speed] if player.physics_params("CLAMP_GROUND_SPEED") else [-INF, INF]
+	var clamp_values = [-target_move_speed, target_move_speed] if player.physics_params("CLAMP_GROUND_SPEED") else [-INF, INF]
 	player.velocity.x = clamp(move_toward(player.velocity.x, target_move_speed * player.input_direction, (target_accel / delta) * delta), clamp_values[0], clamp_values[1])
 	if abs(player.velocity.x) < player.physics_params("MINIMUM_SPEED"):
 		player.velocity.x = player.physics_params("MINIMUM_SPEED") * player.input_direction
