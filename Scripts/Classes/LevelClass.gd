@@ -118,6 +118,21 @@ func _enter_tree() -> void:
 	Global.current_campaign = campaign
 	await get_tree().process_frame
 	AudioManager.stop_music_override(AudioManager.MUSIC_OVERRIDES.NONE, true)
+	apply_resolution_enforcement()
+	tree_exiting.connect(reset_resolution)
+
+
+# Apply the level's requested internal viewport width while gameplay is active.
+func apply_resolution_enforcement() -> void:
+	if enforce_resolution.x > 0:
+		Global.change_window_size(int(enforce_resolution.x))
+	else:
+		reset_resolution()
+
+
+# Restore the player's Android video-size preference when leaving this level.
+func reset_resolution() -> void:
+	Global.change_window_size_via_index(int(Settings.file.video.size))
 
 
 func spawn_in_extra_players() -> void:
