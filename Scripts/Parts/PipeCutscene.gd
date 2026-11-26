@@ -5,6 +5,7 @@ static var seen_cutscene := false
 
 func _enter_tree() -> void:
 	Global.level_metadata.clear()
+	Global.update_theme()
 	Global.current_room_type = room_type
 	Global.game_paused = false
 	theme = WORLD_THEMES[Global.current_campaign][Global.world_num]
