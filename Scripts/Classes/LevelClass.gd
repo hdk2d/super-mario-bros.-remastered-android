@@ -3,6 +3,9 @@ class_name Level
 extends Node
 
 @export var music: JSON = null
+enum RoomType{NORMAL, BONUS_ROOM, COIN_HEAVEN, PIPE_CUTSCENE, TITLE_SCREEN, SublevelExit}
+const ROOM_STRINGS := ["MainRoom", "BonusRoom", "CoinHeaven", "PipeCutscene", "TitleScreen", "SublevelExit"]
+@export var room_type := RoomType.NORMAL
 @export_enum("Overworld", "Underground", "Desert", "Snow", "Jungle", "Beach", "Garden", "Mountain", "Skyland", "Autumn", "Pipeland", "Space", "Underwater", "Volcano", "Castle", "CastleWater", "Airship", "Bonus") var theme := "Overworld"
 
 @export_enum("Day", "Night") var theme_time := "Day"
@@ -83,7 +86,9 @@ static var in_vine_level := false
 static var can_set_time := true
 
 func _enter_tree() -> void:
+	Global.level_metadata.clear()
 	Global.current_level = self
+	Global.current_room_type = room_type
 	update_theme()
 	SpeedrunHandler.timer_active = true
 	SpeedrunHandler.ghost_active = true
@@ -116,6 +121,7 @@ func spawn_in_extra_players() -> void:
 	return
 
 func update_theme() -> void:
+	Global.update_theme()
 	if auto_set_theme:
 		theme = WORLD_THEMES[Global.current_campaign][Global.world_num]
 		campaign = Global.current_campaign
@@ -130,6 +136,22 @@ func update_theme() -> void:
 		Global.current_room = Global.Room.COIN_HEAVEN
 	else:
 		Global.current_room = get_room_type()
+	# Preserve Android's automatic bonus-room detection while supporting
+	# explicit 1.1 room types on level scenes.
+	if room_type != RoomType.NORMAL:
+		Global.current_room_type = room_type
+	else:
+		match Global.current_room:
+			Global.Room.BONUS_ROOM:
+				Global.current_room_type = RoomType.BONUS_ROOM
+			Global.Room.COIN_HEAVEN:
+				Global.current_room_type = RoomType.COIN_HEAVEN
+			Global.Room.PIPE_CUTSCENE:
+				Global.current_room_type = RoomType.PIPE_CUTSCENE
+			Global.Room.TITLE_SCREEN:
+				Global.current_room_type = RoomType.TITLE_SCREEN
+			_:
+				Global.current_room_type = RoomType.NORMAL
 	Global.current_campaign = campaign
 	Global.level_theme = theme
 	Global.theme_time = theme_time
