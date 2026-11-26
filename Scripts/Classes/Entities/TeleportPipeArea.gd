@@ -22,7 +22,6 @@ func update_visuals() -> void:
 
 func run_player_check(player: Player) -> void:
 	if not is_instance_valid(connecting_pipe):
-		Global.log_error("Teleport pipe has no valid paired destination: " + connection_id)
 		return
 	if Global.player_action_pressed(get_input_direction(enter_direction), player.player_id) and can_enter:
 		can_enter = false
