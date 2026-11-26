@@ -303,7 +303,7 @@ func get_animation_name() -> String:
 				return "WaterMove"
 			elif player.flight_meter > 0:
 				return "WingMove"
-			elif abs(player.velocity.x) < player.RUN_SPEED - 10:
+			elif abs(player.velocity.x) < player.physics_params("RUN_SPEED") - 10:
 				return "Walk"
 			else:
 				return "Run"
@@ -341,21 +341,21 @@ func get_animation_name() -> String:
 				return "FlyIdle"
 		if player.has_jumped:
 			if player.bumping and player.can_bump_jump:
-				if abs(player.velocity_x_jump_stored) < player.RUN_SPEED - 10:
+				if abs(player.velocity_x_jump_stored) < player.physics_params("RUN_SPEED") - 10:
 					return "JumpBump"
 				else:
 					return "RunJumpBump"
 			elif player.velocity.y < 0:
 				if player.is_invincible:
 					return "StarJump"
-				elif abs(player.velocity_x_jump_stored) < player.RUN_SPEED - 10:
+				elif abs(player.velocity_x_jump_stored) < player.physics_params("RUN_SPEED") - 10:
 					return "Jump"
 				else:
 					return "RunJump"
 			else:
 				if player.is_invincible:
 					return "StarFall"
-				elif abs(player.velocity_x_jump_stored) < player.RUN_SPEED - 10:
+				elif abs(player.velocity_x_jump_stored) < player.physics_params("RUN_SPEED") - 10:
 					return "JumpFall"
 				else:
 					return "RunJumpFall"
