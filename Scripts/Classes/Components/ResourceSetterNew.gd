@@ -202,16 +202,20 @@ func get_variation_json(json := {}) -> Dictionary:
 	if force_properties.has("Theme"):
 		level_theme = force_properties.Theme
 	for i in json.keys().filter(func(key): return key.contains("config:")):
+		var option_name = i.get_slice(":", 1)
 		get_config_file(current_resource_pack)
-		if config_to_use != {}:
-			var option_name = i.get_slice(":", 1)
-			if config_to_use.options.has(option_name):
-				var config_json = json[i][config_to_use.options[option_name]]
-				if config_json.has("link"):
-					json = get_variation_json(json[config_json.get("link")])
-				else:
-					json = get_variation_json(config_json)
-				break
+		if config_to_use.get("options", {}).has(option_name) == false:
+			for pack in Settings.file.visuals.resource_packs:
+				get_config_file(pack)
+				if config_to_use.get("options", {}).has(option_name):
+					break
+		if config_to_use.get("options", {}).has(option_name):
+			var config_json = json[i][config_to_use.options[option_name]]
+			if config_json.has("link"):
+				json = get_variation_json(json[i][config_json.get("link")])
+			else:
+				json = get_variation_json(config_json)
+			break
 	
 	if json.has(level_theme) == false:
 		level_theme = "default"
@@ -307,13 +311,12 @@ func get_variation_json(json := {}) -> Dictionary:
 	return json
 
 func get_config_file(resource_pack := "") -> void:
-	if FileAccess.file_exists(Global.config_path.path_join("resource_packs/" + resource_pack + "/config.json")):
-		config_to_use = JSONParser.parse_to_dict(Global.config_path.path_join("resource_packs/" + resource_pack + "/config.json"))
-		if config_to_use == null:
+	config_to_use = {}
+	var config_path = Global.config_path.path_join("resource_packs/" + resource_pack + "/config.json")
+	if FileAccess.file_exists(config_path):
+		config_to_use = JSONParser.parse_to_dict(config_path)
+		if config_to_use.is_empty():
 			Global.log_error("Error parsing Config File! (" + resource_pack + ")")
-			config_to_use = {}
-	else:
-		print("resource pack to use: " + resource_pack)
 
 func get_resource_pack_path(res_path := "", resource_pack := "") -> String:
 	var user_path := res_path.replace("res://Assets", Global.config_path.path_join("resource_packs/" + resource_pack))
