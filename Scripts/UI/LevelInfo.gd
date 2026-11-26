@@ -41,13 +41,32 @@ func _process(_delta: float) -> void:
 		closed.emit()
 		close()
 
+func load_level_file() -> bool:
+	var parsed_level := JSONParser.parse_to_dict(file_path)
+	if parsed_level.is_empty() or not parsed_level.has("Levels") or not (parsed_level["Levels"] is Array) or parsed_level["Levels"].size() != 5 or not parsed_level.has("Info") or not (parsed_level["Info"] is Dictionary):
+		Global.log_error("Invalid custom level file: " + file_path)
+		return false
+	for sub_level in parsed_level["Levels"]:
+		if not (sub_level is Dictionary):
+			Global.log_error("Invalid sublevel data in custom level file: " + file_path)
+			return false
+		if sub_level.is_empty():
+			continue
+		if not sub_level.has("Layers") or not (sub_level["Layers"] is Array) or sub_level["Layers"].size() != 5 or not sub_level.has("Data") or not sub_level.has("BG"):
+			Global.log_error("Incomplete sublevel data in custom level file: " + file_path)
+			return false
+	LevelEditor.level_file = parsed_level
+	return true
+
 func level_selected() -> void:
-	LevelEditor.level_file = JSON.parse_string(FileAccess.open(file_path, FileAccess.READ).get_as_text())
+	if not load_level_file():
+		return
 	level_play.emit()
 	active = false
 
 func level_edited() -> void:
-	LevelEditor.level_file = JSON.parse_string(FileAccess.open(file_path, FileAccess.READ).get_as_text())
+	if not load_level_file():
+		return
 	level_edit.emit()
 
 func close() -> void:
