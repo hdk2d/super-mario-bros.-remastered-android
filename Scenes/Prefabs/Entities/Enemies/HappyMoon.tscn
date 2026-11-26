@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/Prefabs/Entities/Enemies/AngrySun.tscn" id="1"]
+[ext_resource type="Script" path="res://Scripts/Parts/PlayerDetection.gd" id="2"]
+
+[sub_resource type="CircleShape2D" id="MoonDetection"]
+
+[node name="HappyMoon" instance=ExtResource("1")]
+
+[node name="ResourceSetterNew" parent="Sprite" index="0"]
+json_path = "res://Assets/Sprites/Enemies/HappyMoon.json"
+
+[node name="Hitbox" parent="." index="3"]
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" parent="Hitbox" index="0"]
+shape = null
+
+[node name="PlayerDetection" type="Area2D" parent="."]
+script = ExtResource("2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerDetection"]
+shape = SubResource("MoonDetection")
+
+[connection signal="player_entered" from="PlayerDetection" to="." method="moon_wipe" unbinds=1]
