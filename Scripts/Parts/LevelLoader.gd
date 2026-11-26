@@ -136,15 +136,17 @@ func apply_bg_data(data := "") -> void:
 	var split = data.split("=", false)
 	var id := 0
 	
-	const BG_VALUES := ["primary_layer", "second_layer", "second_layer_offset", "time_of_day", "particles", "liquid_layer", "overlay_clouds"]
+	const BG_VALUES := ["primary_layer", "second_layer", "second_layer_offset", "time_of_day", "particles", "liquid_layer", "overlay_clouds", "second_layer_order"]
 	var SELECTORS = [%PrimaryLayer, %SecondLayer, %SecondLayerOffset, %TimeOfDay, %Particles, %LiquidLayer, %OverlayClouds]
 	for i in split:
+		if id >= BG_VALUES.size():
+			break
 		var value := 0
 		if i.length() > 1:
-			value = (decode_from_base64_2char(i))
+			value = decode_from_base64_2char(i)
 		else:
-			value = (base64_charset.find(i))
-		if is_instance_valid($TileMenu):
+			value = base64_charset.find(i)
+		if is_instance_valid($TileMenu) and id < SELECTORS.size():
 			if SELECTORS[id] is SpinBox:
 				SELECTORS[id].value = value
 			elif SELECTORS[id] is Button:
