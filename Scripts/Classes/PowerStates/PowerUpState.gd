@@ -6,7 +6,7 @@ extends Node
 @export_enum("Small", "Big") var hitbox_size := "Small"
 @export var damage_state: PowerUpState = null
 
-@onready var player: Player = owner
+@onready var player: Node = owner
 
 func update(_delta: float) -> void:
 	pass
