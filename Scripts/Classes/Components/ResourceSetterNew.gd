@@ -45,6 +45,8 @@ signal updated
 var current_resource_pack := ""
 
 @export var force_properties := {}
+@export var metadata_node: Node = null
+static var sequences := {}
 var update_on_spawn := true
 
 func _init() -> void:
@@ -256,14 +258,30 @@ func get_variation_json(json := {}) -> Dictionary:
 		else:
 			json = get_variation_json(json[campaign])
 	
-	if json.has("choices"):
+	if json.has("choices") and json.choices is Array and json.choices.is_empty() == false:
 		is_random = true
 		var random_json = json.choices.pick_random()
 		if random_json.has("link"):
 			json = get_variation_json(json[random_json.get("link")])
 		else:
 			json = get_variation_json(random_json)
-	
+
+	if json.has("sequence") and json.sequence is Array and json.sequence.is_empty() == false:
+		is_random = true
+		var sequence_key = json_path if json_path != "" else resource_json.resource_path
+		var sequence_index := 0
+		if has_meta("SequencePos"):
+			sequence_index = int(get_meta("SequencePos"))
+		else:
+			sequence_index = int(sequences.get(sequence_key, -1)) + 1
+			set_meta("SequencePos", sequence_index)
+			sequences[sequence_key] = sequence_index
+		var sequence_json = json.sequence[posmod(sequence_index, json.sequence.size())]
+		if sequence_json.has("link"):
+			json = get_variation_json(json[sequence_json.get("link")])
+		else:
+			json = get_variation_json(sequence_json)
+
 	var world = "World" + str(Global.world_num)
 	if force_properties.has("World"):
 		world = "World" + str(force_properties.World)
@@ -284,6 +302,15 @@ func get_variation_json(json := {}) -> Dictionary:
 		else:
 			json = get_variation_json(json[level_string])
 	
+	var quest = "Quest:1"
+	if Global.second_quest:
+		quest = "Quest:2"
+	if json.has(quest):
+		if json[quest].has("link"):
+			json = get_variation_json(json[json[quest].get("link")])
+		else:
+			json = get_variation_json(json[quest])
+
 	var room = "RoomType:" + Level.ROOM_STRINGS[Global.current_room_type]
 	# Accept the previous Android room keys while preferring the 1.1 format.
 	if json.has(room) == false:
@@ -324,6 +351,37 @@ func get_variation_json(json := {}) -> Dictionary:
 			json = get_variation_json(json[json.get(boo).get("link")])
 		else:
 			json = get_variation_json(json[boo])
+
+	var metadata_keys = json.keys().filter(func(key): return key.contains("Metadata") and key.contains("LevelMetadata") == false)
+	if metadata_keys.is_empty() == false:
+		for key in metadata_keys:
+			var metadata_name = key.get_slice(":", 1)
+			var metadata_source: Node = metadata_node
+			if not is_instance_valid(metadata_source):
+				metadata_source = owner
+			var metadata_value := "Default"
+			if is_instance_valid(metadata_source):
+				metadata_value = str(metadata_source.get_meta(metadata_name, "Default"))
+			var metadata_json = json[key].get(metadata_value, json[key].get("Default"))
+			if metadata_json is Dictionary:
+				if metadata_json.has("link"):
+					json = get_variation_json(json[key][metadata_json.get("link")])
+				else:
+					json = get_variation_json(metadata_json)
+				break
+
+	metadata_keys = json.keys().filter(func(key): return key.contains("LevelMetadata"))
+	if metadata_keys.is_empty() == false:
+		for key in metadata_keys:
+			var metadata_name = key.get_slice(":", 1)
+			var metadata_value := str(Global.level_metadata.get(metadata_name, "Default"))
+			var metadata_json = json[key].get(metadata_value, json[key].get("Default"))
+			if metadata_json is Dictionary:
+				if metadata_json.has("link"):
+					json = get_variation_json(json[key][metadata_json.get("link")])
+				else:
+					json = get_variation_json(metadata_json)
+				break
 	
 	return json
 
