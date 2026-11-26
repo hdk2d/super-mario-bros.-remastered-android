@@ -6,7 +6,7 @@ extends AnimatedSprite2D
 @export var force_character := ""
 var character := ""
 
-@export var resource_setter: ResourceSetterNew
+@export var resource_setter: Node
 
 func _ready() -> void:
 	Global.player_characters_changed.connect(update)
