@@ -109,10 +109,10 @@ func in_game() -> void:
 	if exit_only:
 		return
 	for i in hitbox.get_overlapping_areas():
-		if i.owner is Player and can_enter:
+		if i.owner is Node2D and i.owner.is_in_group("Players") and can_enter:
 			run_player_check(i.owner)
 
-func run_player_check(player: Player) -> void:
+func run_player_check(player) -> void:
 	# guzlad: Added support for characters with a hitbox height below 1.0 to enter pipes underwater
 	# SkyanUltra: Added distance check to prevent entering pipes from too low.
 	var distance = player.global_position.distance_to(hitbox.global_position)
