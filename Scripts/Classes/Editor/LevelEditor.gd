@@ -126,7 +126,7 @@ func _ready() -> void:
 			entity_tiles[layer_idx][x.get_meta("tile_position")] = x
 	if level_file != {}:
 		Level.can_set_time = true
-		$LevelLoader.load_level(Checkpoint.sublevel_id)
+		await $LevelLoader.load_level(Checkpoint.sublevel_id)
 		if Global.current_game_mode == Global.GameMode.CUSTOM_LEVEL:
 			$Info.hide()
 			%Grid.hide()
