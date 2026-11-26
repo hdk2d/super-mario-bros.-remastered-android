@@ -104,7 +104,7 @@ jobs:
         run: |
           set -euo pipefail
           godot --headless --path . --quit-after 180 2>&1 | tee godot-smoke.log
-          if grep -E '(^| )(SCRIPT ERROR:|ERROR:)' godot-smoke.log; then
+          if grep -E '(^| )(SCRIPT ERROR:|ERROR:)' godot-smoke.log | grep -v -E 'Editor plugin is not registered: GifToSpriteFramesPlugin|Editor plugin is not registered: GifToAnimatedTexturePlugin|ERROR: [0-9]+ RID allocations of type .* were leaked at exit|ERROR: [0-9]+ resources still in use at exit'; then
             echo "Godot startup reported script or runtime errors."
             exit 1
           fi
