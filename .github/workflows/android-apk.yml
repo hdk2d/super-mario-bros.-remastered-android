@@ -1,0 +1,94 @@
+name: Android APK build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Export Android APK (arm64-v8a)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          accept-android-sdk-licenses: true
+
+      - name: Install Android SDK components
+        run: |
+          sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;28.1.13356709" "cmake;3.10.2.4988404"
+
+      - name: Install Godot 4.6.1 and export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          wget -q https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux.x86_64.zip
+          unzip -q Godot_v4.6.1-stable_linux.x86_64.zip
+          sudo install -m 0755 Godot_v4.6.1-stable_linux.x86_64 /usr/local/bin/godot
+          wget -q https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_export_templates.tpz
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.6.1.stable"
+          mkdir -p /tmp/godot-export-templates
+          unzip -q Godot_v4.6.1-stable_export_templates.tpz -d /tmp/godot-export-templates
+          if [ -d /tmp/godot-export-templates/templates ]; then
+            cp -a /tmp/godot-export-templates/templates/. "$HOME/.local/share/godot/export_templates/4.6.1.stable/"
+          else
+            cp -a /tmp/godot-export-templates/. "$HOME/.local/share/godot/export_templates/4.6.1.stable/"
+          fi
+          godot --version
+
+      - name: Configure Godot Android paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot"
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -v -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
+
+      - name: Install Android Gradle build template
+        run: godot --headless --editor --path . --install-android-build-template
+
+      - name: Import project assets
+        run: godot --headless --editor --path . --import
+
+      - name: Export debug APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/android
+          godot --headless --path . --export-debug "Android" build/android/smb1r-android-arm64.apk 2>&1 | tee android-export.log
+          test -s build/android/smb1r-android-arm64.apk
+          file build/android/smb1r-android-arm64.apk
+          sha256sum build/android/smb1r-android-arm64.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMB1R-Android-arm64-debug
+          path: build/android/smb1r-android-arm64.apk
+          if-no-files-found: error
+          retention-days: 14
