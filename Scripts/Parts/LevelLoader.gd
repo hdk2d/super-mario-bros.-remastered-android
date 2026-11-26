@@ -60,11 +60,11 @@ func reset_empty_sublevel() -> void:
 	Global.theme_time = level.theme_time
 	level_bg.set_value(0, "primary_layer")
 	level_bg.set_value(0, "second_layer")
-	level_bg.set_value(0, "second_layer_offset")
+	level_bg.set_value(Vector2.ZERO, "second_layer_offset")
 	level_bg.set_value(0, "time_of_day")
 	level_bg.set_value(0, "particles")
 	level_bg.set_value(0, "liquid_layer")
-	level_bg.set_value(0, "overlay_clouds")
+	level_bg.set_value(false, "overlay_clouds")
 	level_bg.set_value(0, "second_layer_order")
 	ResourceSetterNew.cache.clear()
 	Global.level_theme_changed.emit()
