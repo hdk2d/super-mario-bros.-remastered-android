@@ -167,8 +167,8 @@ shape = SubResource("RectangleShape2D_ce8wa")
 
 [node name="BlockAnimations" parent="." instance=ExtResource("4_tgrgf")]
 
-[connection signal="player_block_hit" from="." to="." method="block_hit" unbinds=1]
+[connection signal="player_block_hit" from="." to="." method="on_block_hit" unbinds=1]
 [connection signal="player_block_hit" from="." to="BlockAnimations" method="bounce_block" unbinds=1]
-[connection signal="shell_block_hit" from="." to="." method="block_hit" unbinds=1]
+[connection signal="shell_block_hit" from="." to="." method="on_block_hit" unbinds=1]
 [connection signal="shell_block_hit" from="." to="BlockAnimations" method="bounce_block" unbinds=1]
 [connection signal="timeout" from="Timer" to="." method="on_timeout"]
