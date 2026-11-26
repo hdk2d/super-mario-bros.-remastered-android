@@ -28,6 +28,7 @@ animations = [{
 
 [node name="RedPirannhaPlant" instance=ExtResource("1_6wd2m")]
 player_range = 16
+rise_animation = "RiseRed"
 
 [node name="Sprite" parent="." index="0"]
 sprite_frames = SubResource("SpriteFrames_ep4ch")
