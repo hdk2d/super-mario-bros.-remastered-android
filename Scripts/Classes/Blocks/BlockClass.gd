@@ -2,7 +2,7 @@
 class_name Block
 extends AnimatableBody2D
 signal player_block_hit(player: Variant)
-signal shell_block_hit(shell: Shell)
+signal shell_block_hit(shell: Variant)
 
 @export var visuals: Node = null
 const EMPTY_BLOCK = ("res://Scenes/Prefabs/Blocks/EmptyBlock.tscn")
