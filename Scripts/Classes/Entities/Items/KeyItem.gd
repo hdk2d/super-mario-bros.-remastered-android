@@ -2,7 +2,7 @@ class_name KeyItem
 extends Node2D
 
 static var total_collected := 0
-const SMOKE_PARTICLE = preload("uid://d08nv4qtfouv1")
+const SMOKE_PARTICLE = preload("res://Scenes/Prefabs/Particles/SmokeParticle.tscn")
 func _ready() -> void:
 	$AnimationPlayer.play("Float")
 
