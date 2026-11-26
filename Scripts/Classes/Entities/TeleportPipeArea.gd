@@ -5,7 +5,10 @@ extends PipeArea
 @export var connecting_pipe: PipeArea = null
 
 # Stable editor/save identifier used to reconnect paired teleport pipes after loading.
-@export var connection_id := ""
+@export var connection_id := "":
+	set(value):
+		# Keep the identifier compatible with the comma/equal-delimited level format.
+		connection_id = value.replace(",", "").replace("&", "").replace("=", "").replace("\n", "").replace("\r", "").strip_edges()
 
 func _ready() -> void:
 	update_visuals()
