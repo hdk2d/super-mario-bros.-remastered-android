@@ -1,6 +1,9 @@
 class_name FireDetection
 extends Node
 
+const BURNER_SCRIPT = preload("res://Scripts/Classes/Entities/Objects/Burner.gd")
+const PODOBOO_SCRIPT = preload("res://Scripts/Classes/Entities/Enemies/Podoboo.gd")
+
 @export var hitbox: Area2D = null
 
 signal fiery_object_hit(node: Node2D)
@@ -25,11 +28,11 @@ func area_entered(area: Area2D) -> void:
 	if node is FireBall or node is PlantFireball:
 		fireball_hit.emit(node)
 		node.hit()
-	elif node is Burner:
+	elif node.get_script() == BURNER_SCRIPT:
 		burner_hit.emit(node)
 	elif node is AngrySun:
 		angry_sun_hit.emit(node)
 	elif node is BowserFlame:
 		bowser_flame_hit.emit(node)
-	elif node is Podoboo:
+	elif node.get_script() == PODOBOO_SCRIPT:
 		podoboo_hit.emit(node)
