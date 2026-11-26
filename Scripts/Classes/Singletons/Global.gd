@@ -147,6 +147,7 @@ signal frame_rule
 var hard_mode := false
 
 var current_campaign := "SMB1"
+var current_custom_campaign := ""
 
 var death_load := false
 
@@ -160,6 +161,9 @@ var can_pause := true
 var fade_transition := true
 
 enum GameMode{NONE, CAMPAIGN, BOO_RACE, CHALLENGE, MARATHON, MARATHON_PRACTICE, LEVEL_EDITOR, CUSTOM_LEVEL, DISCO}
+
+func in_custom_campaign(campaign := current_custom_campaign) -> bool:
+	return campaign not in CAMPAIGNS and campaign != ""
 
 const game_mode_strings := ["Default", "Campaign", "BooRace", "Challenge", "Marathon", "MarathonPractice", "LevelEditor", "CustomLevel", "Disco"]
 
