@@ -60,17 +60,34 @@ jobs:
           print(f"SelectorKeyMap.json OK: {len(lines)} selector keys (line-based format)")
           PY
 
+      - name: Prepare headless validation project
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          path = Path("project.godot")
+          text = path.read_text(encoding="utf-8")
+          start = text.find("[editor_plugins]")
+          if start >= 0:
+              end = text.find("\\n[", start + 1)
+              if end < 0:
+                  end = len(text)
+              section = text[start:end]
+              section = re.sub(r"(?m)^enabled=.*$", "enabled=PackedStringArray()", section)
+              text = text[:start] + section + text[end:]
+          text = re.sub(r"(?m)^theme/custom(?:_font)?=.*\\n", "", text)
+          path.write_text(text, encoding="utf-8")
+          print("Headless validation: editor plugins and custom theme temporarily disabled.")
+          PY
+
       - name: Import project assets
         shell: bash
         run: |
           set -euo pipefail
           godot --headless --editor --path . --import 2>&1 | tee godot-import.log
-
-      - name: Diagnose Player script directly
-        shell: bash
-        run: |
-          set -uo pipefail
-          godot --headless --path . --check-only --script res://Scripts/Classes/Entities/Player.gd 2>&1 | tee player-check.log || true
 
       - name: Parse scripts and validate resources
         shell: bash
