@@ -522,5 +522,9 @@
 	"E0": [
 		"res://Scenes/Prefabs/Entities/Enemies/StaticRedPiranhaPlant.tscn",
 		"0,8"
+	],
+	"CP": [
+		"res://Scenes/Prefabs/Entities/Objects/Crate.tscn",
+		"0,8"
 	]
 }
