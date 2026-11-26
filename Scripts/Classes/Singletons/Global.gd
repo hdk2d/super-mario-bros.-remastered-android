@@ -194,7 +194,7 @@ var game_viewport
 func update_theme() -> void:
 	theme_override = ""
 	time_override = ""
-	ResourceSetterNew.cache.clear()
+	ResourceSetterNew.clear_cache()
 	level_theme_changed.emit()
 	level_time_changed.emit()
 
