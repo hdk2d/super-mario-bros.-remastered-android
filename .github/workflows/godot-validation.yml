@@ -29,13 +29,13 @@ jobs:
         with:
           lfs: true
 
-      - name: Install Godot 4.5.1
+      - name: Install Godot 4.6.1
         shell: bash
         run: |
           set -euo pipefail
-          wget -q https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_linux.x86_64.zip
-          unzip -q Godot_v4.5.1-stable_linux.x86_64.zip
-          sudo install -m 0755 Godot_v4.5.1-stable_linux.x86_64 /usr/local/bin/godot
+          wget -q https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux.x86_64.zip
+          unzip -q Godot_v4.6.1-stable_linux.x86_64.zip
+          sudo install -m 0755 Godot_v4.6.1-stable_linux.x86_64 /usr/local/bin/godot
           godot --version
           strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep -F GLIBCXX_3.4.32
 
