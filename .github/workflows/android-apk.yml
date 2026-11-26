@@ -14,7 +14,7 @@ jobs:
   build:
     name: Export Android APK (arm64-v8a)
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -69,11 +69,19 @@ jobs:
           mkdir -p "$HOME/.android"
           keytool -genkeypair -v -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
 
-      - name: Install Android Gradle build template
-        run: godot --headless --editor --path . --install-android-build-template
-
       - name: Import project assets
-        run: godot --headless --editor --path . --import
+        timeout-minutes: 30
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=30s 29m godot --headless --editor --path . --import
+
+      - name: Install Android Gradle build template
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=30s 14m godot --headless --editor --path . --quit --install-android-build-template
 
       - name: Export debug APK
         shell: bash
