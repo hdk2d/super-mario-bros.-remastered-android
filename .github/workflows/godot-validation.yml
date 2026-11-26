@@ -2,6 +2,9 @@ name: Godot validation
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - port/joemama-1.1.0-android
 
 permissions:
   contents: read
@@ -66,13 +69,13 @@ jobs:
           text = path.read_text(encoding="utf-8")
           start = text.find("[editor_plugins]")
           if start >= 0:
-              end = text.find("\n[", start + 1)
+              end = text.find("\\n[", start + 1)
               if end < 0:
                   end = len(text)
               section = text[start:end]
               section = re.sub(r"(?m)^enabled=.*$", "enabled=PackedStringArray()", section)
               text = text[:start] + section + text[end:]
-          text = re.sub(r"(?m)^theme/custom(?:_font)?=.*\n", "", text)
+          text = re.sub(r"(?m)^theme/custom(?:_font)?=.*\\n", "", text)
           path.write_text(text, encoding="utf-8")
           print("Headless validation: editor plugins and custom theme temporarily disabled.")
           PY
@@ -102,3 +105,15 @@ jobs:
             echo "Godot startup reported script or runtime errors."
             exit 1
           fi
+
+      - name: Upload Godot validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-validation-logs
+          path: |
+            godot-import.log
+            godot-parse.log
+            godot-smoke.log
+          if-no-files-found: ignore
+          retention-days: 7
