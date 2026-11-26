@@ -133,6 +133,9 @@ func apply_level_data(data := "") -> void:
 	Global.level_theme_changed.emit()
 
 func apply_bg_data(data := "") -> void:
+	# Older Android level files omit this 1.1 field; reset it before loading
+	# so a previous sublevel's value cannot leak into the next one.
+	level_bg.second_layer_order = 0
 	var split = data.split("=", false)
 	var id := 0
 	
