@@ -21,4 +21,4 @@ func on_timeout() -> void:
 		if abs(player.global_position.x - global_position.x) >= player_range:
 			$Animation.play(rise_animation)
 	elif (abs(player.global_position.y - global_position.y) >= player_range and abs(player.global_position.x - global_position.x) >= player_range * 2):
-			$Animation.play("Rise")
+			$Animation.play(rise_animation)
