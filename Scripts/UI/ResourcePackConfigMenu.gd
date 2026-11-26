@@ -1,7 +1,7 @@
 extends Control
 
 var config_json := {}
-const RESOURCE_PACK_CONFIG_OPTION_NODE = preload("uid://c5ea03ob6ncq7")
+const RESOURCE_PACK_CONFIG_OPTION_NODE = preload("res://Scenes/Parts/ResourcePackConfigOptionNode.tscn")
 
 signal closed
 
