@@ -19,8 +19,9 @@ concurrency:
 jobs:
   validate:
     name: Import, parse and smoke test
-    runs-on: ubuntu-22.04
-    timeout-minutes: 25
+    # The bundled godotgif GDExtension needs GLIBCXX_3.4.32, unavailable on Ubuntu 22.04.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -36,6 +37,7 @@ jobs:
           unzip -q Godot_v4.5.1-stable_linux.x86_64.zip
           sudo install -m 0755 Godot_v4.5.1-stable_linux.x86_64 /usr/local/bin/godot
           godot --version
+          strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep -F GLIBCXX_3.4.32
 
       - name: Validate project data files
         shell: bash
@@ -58,8 +60,28 @@ jobs:
           print(f"SelectorKeyMap.json OK: {len(lines)} selector keys (line-based format)")
           PY
 
-      - name: Import project and parse scripts
-        run: godot --headless --editor --path . --quit
+      - name: Import project assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --editor --path . --import 2>&1 | tee godot-import.log
+
+      - name: Parse scripts and validate resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --editor --path . --quit 2>&1 | tee godot-parse.log
+          if grep -E '(^| )(SCRIPT ERROR:|ERROR:)' godot-parse.log; then
+            echo "Godot reported script or resource errors."
+            exit 1
+          fi
 
       - name: Run headless startup smoke test
-        run: godot --headless --path . --quit-after 180
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path . --quit-after 180 2>&1 | tee godot-smoke.log
+          if grep -E '(^| )(SCRIPT ERROR:|ERROR:)' godot-smoke.log; then
+            echo "Godot startup reported script or runtime errors."
+            exit 1
+          fi
