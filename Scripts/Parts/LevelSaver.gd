@@ -131,6 +131,9 @@ func save_level_data() -> void:
 		else:
 			key = base64_charset[int(i)]
 		string += key + "="
+	# 1.1 stores the enforced resolution as two additional base64 components.
+	string += encode_to_base64_2char(int(level.enforce_resolution.x)) + "="
+	string += encode_to_base64_2char(int(level.enforce_resolution.y)) + "="
 	sub_level_file["Data"] = string
 
 func save_bg_data() -> void:
