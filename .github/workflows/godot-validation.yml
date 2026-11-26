@@ -66,6 +66,12 @@ jobs:
           set -euo pipefail
           godot --headless --editor --path . --import 2>&1 | tee godot-import.log
 
+      - name: Diagnose Player script directly
+        shell: bash
+        run: |
+          set -uo pipefail
+          godot --headless --path . --check-only --script res://Scripts/Classes/Entities/Player.gd 2>&1 | tee player-check.log || true
+
       - name: Parse scripts and validate resources
         shell: bash
         run: |
