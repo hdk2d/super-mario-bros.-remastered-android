@@ -15,7 +15,14 @@ static func reset_states() -> void:
 	Checkpoint.old_state = [[], []]
 
 func _ready() -> void:
-	return
+	if owner == null or owner.has_meta("block_item"):
+		queue_free()
+		return
+	path = get_path_string()
+	if active_nodes[0].has(path):
+		enabled.emit.call_deferred()
+	if active_nodes[1].has(path):
+		enabled_2.emit.call_deferred()
 
 func set_as_active() -> void:
 	if owner.has_meta("no_persist"): return
