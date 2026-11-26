@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://c6t324yc5gx7p"]
+[gd_scene load_steps=7 format=3 uid="uid://c6t324yc5gx7p"]
 
 [ext_resource type="Script" uid="uid://cp4040k6fqwow" path="res://Scripts/Classes/Entities/TeleportPipeArea.gd" id="1_40l7q"]
 [ext_resource type="Texture2D" uid="uid://c8yio3lpcsvqu" path="res://Assets/Sprites/UI/PipeArrow.png" id="2_fkbuh"]
 [ext_resource type="Script" uid="uid://cpwloakvp672a" path="res://Scripts/Parts/EditorVisibleNode.gd" id="3_40l7q"]
+[ext_resource type="Script" uid="uid://ctfbuoxtnnl0q" path="res://Scripts/Classes/Components/EditorPropertyExposer.gd" id="4_exposer"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lv0oh"]
 size = Vector2(16, 16)
@@ -61,3 +62,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
+
+[node name="EditorPropertyExposer" type="Node" parent="."]
+script = ExtResource("4_exposer")
+properties = Array[String](["connection_id"])
