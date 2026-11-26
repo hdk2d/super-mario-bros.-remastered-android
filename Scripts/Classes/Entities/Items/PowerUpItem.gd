@@ -13,18 +13,18 @@ const player_angles := [Vector2(-1, -1), Vector2(1, -1), Vector2(-0.5, -2), Vect
 func _physics_process(delta: float) -> void:
 	physics_tick.emit(delta)
 
-func collect_item(player: Player) -> void:
+func collect_item(player: Node) -> void:
 	collected.emit()
 	player.get_power_up(power_up_state)
 	queue_free()
 
-func player_multiplayer_launch_spawn(player: Player) -> void:
+func player_multiplayer_launch_spawn(player: Node) -> void:
 	global_position.y -= 8
 	velocity = 100 * player_angles[player.player_id]
 	direction = sign(velocity.x)
 
 func on_area_entered(area: Area2D) -> void:
-	if area.owner is Player:
+	if area.owner is Node and area.owner.is_in_group("Players"):
 		collect_item(area.owner)
 
 func block_bounce_up(block: Node2D) -> void:
