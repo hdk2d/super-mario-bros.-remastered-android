@@ -116,6 +116,7 @@ _data = {
 
 [node name="PipeCutscene" type="Node"]
 script = ExtResource("1_16rwd")
+room_type = 3
 auto_set_theme = true
 metadata/_custom_type_script = "uid://bcqr1v25ygedb"
 
